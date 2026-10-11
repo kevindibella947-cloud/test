@@ -17,7 +17,7 @@
   <!-- GameMonetize SDK Integrato -->
   <script type="text/javascript">
      window.SDK_OPTIONS = {
-        gameId: "SOSTITUISCI_CON_IL_TUO_GAME_ID", // Sostituisci con il tuo ID numerico di GameMonetize
+        gameId: "SOSTITUISCI_CON_IL_TUO_GAME_ID", // Sostituisci con il tuo ID numerico ricevuto da GameMonetize
         onEvent: function (a) {
            switch (a.name) {
               case "SDK_GAME_PAUSE":
@@ -75,43 +75,4 @@
 
     /* HUB GIOCHI */
     .hub-view { display: none; }
-    .welcome-box { background: linear-gradient(135deg, rgba(147,51,234,0.15), rgba(59,130,246,0.15)); border: 1px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
-    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .game-card { background: #16161e; border: 1px solid #272736; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
-    .game-thumb { width: 100%; height: 160px; background: #272736; display: flex; align-items: center; justify-content: center; font-size: 48px; }
-    .game-body { padding: 15px; }
-    .btn-play { width: 100%; padding: 10px; background: #22c55e; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-
-    /* VISTA SCHERMATA GIOCO CLICKER */
-    .game-view { display: none; }
-    .card-game { background: #16161e; border: 1px solid #272736; padding: 30px; border-radius: 16px; width: 100%; max-width: 520px; margin: 0 auto; text-align: center; }
-    .user-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #272736; }
-    .user-name { font-weight: bold; color: #3b82f6; font-size: 1.1rem; }
-    .btn-back { background: none; border: 1px solid #3b82f6; color: #3b82f6; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
-
-    /* BOX AVVISO REGOLE */
-    .notice-box { background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; padding: 12px; border-radius: 8px; font-size: 13px; color: #93c5fd; margin-bottom: 20px; text-align: center; line-height: 1.4; }
-    .notice-box strong { color: #3b82f6; }
-
-    .counter-container { font-size: 2.2rem; font-weight: bold; margin-bottom: 10px; color: #ffffff; }
-    .progress-info { font-size: 14px; color: #eab308; margin-bottom: 20px; font-weight: bold; }
-
-    .btn-wrapper { position: relative; margin-bottom: 20px; }
-    .click-btn { padding: 25px 50px; font-size: 1.8rem; font-weight: bold; color: white; background: linear-gradient(145deg, #007bff, #0056b3); border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4); outline: none; user-select: none; }
-    .click-btn:active { transform: scale(0.92); }
-
-    .floating-text { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; font-weight: bold; color: #22c55e; pointer-events: none; animation: floatUp 0.7s ease-out forwards; }
-    @keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -60px); } }
-
-    .claim-btn { width: 100%; padding: 12px 20px; background: linear-gradient(135deg, #3b82f6, #9333ea); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 10px; display: none; }
-    .save-btn { width: 100%; padding: 12px 20px; background-color: #22c55e; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 25px; }
-
-    .leaderboard-container { width: 100%; border-top: 1px solid #272736; padding-top: 20px; text-align: left; }
-    .leaderboard-container h2 { font-size: 1.2rem; margin-bottom: 15px; text-align: center; color: #a855f7; }
-    .leaderboard-list { list-style: none; padding: 0; margin: 0; }
-    .leaderboard-item { display: flex; justify-content: space-between; padding: 10px 15px; background: #0b0b0e; border: 1px solid #272736; border-radius: 8px; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-    .empty-msg { text-align: center; color: #888; font-style: italic; }
-
-    /* CONTENITORI AVATAR 3D */
-    .avatar-3d-box { width: 100px; height: 100px; background: rgba(0,0,0,0.3); border-radius: 50%; overflow: hidden; border: 2px solid #a855f7; }
-    .avatar-3d-game { width: 150px; height: 150px; margin: 0 auto 15px auto; background: rgba(0,0,0,0.3); border-radius: 12px; border: 2px
+    .welcome-box { background: linear-gradient(135deg, rgba(147,51,234,0.15), rgba(59,130,246,0.15)); border: 1px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 30
