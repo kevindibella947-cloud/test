@@ -3,180 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blox Platform - Clicker Game</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none;
-    }
-
-    body {
-      background: #111319;
-      color: #fff;
-      overflow: hidden;
-      display: flex;
-      height: 100vh;
-    }
-
-    /* Area Gioco 3D */
-    #game-container {
-      flex: 1;
-      position: relative;
-      height: 100%;
-    }
-
-    #canvas-3d {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    /* HUD e Punteggio */
-    #hud {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: rgba(20, 24, 35, 0.85);
-      padding: 15px 25px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
-
-    #hud h1 {
-      font-size: 26px;
-      color: #00e5ff;
-      margin-bottom: 5px;
-    }
-
-    #platabux-count {
-      font-size: 22px;
-      font-weight: bold;
-      color: #ffd700;
-    }
-
-    #pps-count {
-      font-size: 14px;
-      color: #a0a5b5;
-      margin-top: 2px;
-    }
-
-    /* Shop e Potenziamenti */
-    #sidebar {
-      width: 340px;
-      background: #181c27;
-      border-left: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      gap: 15px;
-      z-index: 10;
-    }
-
-    #sidebar h2 {
-      font-size: 20px;
-      color: #fff;
-      border-bottom: 2px solid #00e5ff;
-      padding-bottom: 8px;
-    }
-
-    .upgrade-card {
-      background: #222736;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 15px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      transition: transform 0.1s, border-color 0.2s;
-    }
-
-    .upgrade-card:hover {
-      border-color: #00e5ff;
-    }
-
-    .upgrade-info {
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      font-size: 15px;
-    }
-
-    .upgrade-desc {
-      font-size: 12px;
-      color: #8f95a5;
-    }
-
-    .btn {
-      background: linear-gradient(135deg, #00c6ff, #0072ff);
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn:disabled {
-      background: #333a4d;
-      color: #667085;
-      cursor: not-allowed;
-    }
-
-    .btn-ad {
-      background: linear-gradient(135deg, #ff9900, #ff5500);
-      margin-top: auto;
-    }
-
-    /* Testo Fluttuante (+1) */
-    .click-popup {
-      position: absolute;
-      color: #ffd700;
-      font-weight: bold;
-      font-size: 24px;
-      pointer-events: none;
-      animation: floatUp 0.8s ease-out forwards;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
-    }
-  </style>
-
-  <!-- Three.js (Libreria Grafica 3D) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <title>Blox Platform - Official Hub</title>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
   <!-- GameMonetize SDK Integrato -->
   <script type="text/javascript">
      window.SDK_OPTIONS = {
-        gameId: "SOSTITUISCI_CON_IL_TUO_GAME_ID", // Incolla qui il tuo Game ID da GameMonetize
+        gameId: "SOSTITUISCI_CON_IL_TUO_GAME_ID_GAMEMONETIZE",
         onEvent: function (a) {
            switch (a.name) {
               case "SDK_GAME_PAUSE":
                  window.isGamePaused = true;
-                 console.log("GameMonetize: Gioco in Pausa");
+                 console.log("GameMonetize: Gioco/Hub in Pausa");
                  break;
               case "SDK_GAME_START":
                  window.isGamePaused = false;
-                 console.log("GameMonetize: Gioco Ripreso");
+                 console.log("GameMonetize: Ripresa");
                  break;
               case "SDK_READY":
-                 console.log("GameMonetize SDK Pronto");
+                 console.log("GameMonetize SDK Pronto!");
                  break;
            }
         }
@@ -186,243 +35,248 @@
         a.getElementById(c) || (a = a.createElement(b), a.id = c, a.src = "https://api.gamemonetize.com/sdk.js", d.parentNode.insertBefore(a, d))
      })(document, "script", "gamemonetize-sdk");
   </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: #0f1219;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header e Profilo Utente */
+    header {
+      background: #181d29;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid rgba(0, 229, 255, 0.2);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: #00e5ff;
+      letter-spacing: 1px;
+    }
+
+    .user-stats {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .stat-badge {
+      background: #22293a;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .platabux { color: #ffd700; }
+    .coins { color: #00ff88; }
+
+    /* Layout Principale dell'Hub */
+    main {
+      flex: 1;
+      padding: 40px 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin-bottom: 20px;
+      border-left: 4px solid #00e5ff;
+      padding-left: 10px;
+    }
+
+    /* Griglia dei Minigiochi */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .game-card {
+      background: #181d29;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      border-color: #00e5ff;
+    }
+
+    .game-thumb {
+      width: 100%;
+      height: 160px;
+      background: #252d3f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .game-info {
+      padding: 18px;
+    }
+
+    .game-info h3 {
+      margin-bottom: 6px;
+      font-size: 18px;
+    }
+
+    .game-info p {
+      font-size: 13px;
+      color: #949db1;
+      margin-bottom: 15px;
+    }
+
+    /* Bottoni e Interazioni */
+    .btn {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover { opacity: 0.9; }
+
+    .btn-reward {
+      background: linear-gradient(135deg, #ff9900, #ff5500);
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px;
+      font-size: 16px;
+    }
+
+    /* Modal / Iframe del Gioco */
+    #game-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      flex-direction: column;
+    }
+
+    #game-modal-header {
+      background: #181d29;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #game-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .close-btn {
+      background: #ff4757;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Area Principale di Gioco -->
-  <div id="game-container">
-    <div id="hud">
-      <h1>Blox Platform</h1>
-      <div id="platabux-count">0 Platabux</div>
-      <div id="pps-count">+0 Platabux/sec</div>
+  <!-- Header dell'Hub -->
+  <header>
+    <div class="logo">BLOX PLATFORM HUB</div>
+    <div class="user-stats">
+      <div class="stat-badge platabux">Platabux: <span id="hub-platabux">0</span></div>
+      <div class="stat-badge coins">Coins: <span id="hub-coins">0</span></div>
     </div>
-    <canvas id="canvas-3d"></canvas>
-  </div>
+  </header>
 
-  <!-- Shop Potenziamenti Sidebar -->
-  <div id="sidebar">
-    <h2>Potenziamenti</h2>
-
-    <!-- Potenziamento Clic -->
-    <div class="upgrade-card">
-      <div class="upgrade-info">
-        <span>Super Clic</span>
-        <span id="click-lvl">Lvl 1</span>
+  <!-- Contenuto Principale -->
+  <main>
+    <h2 class="section-title">Minigiochi Disponibili</h2>
+    
+    <div class="games-grid">
+      
+      <!-- Minigioco 1: Clicker 3D -->
+      <div class="game-card" onclick="launchGame('clicker.html')">
+        <div class="game-thumb">🖱️</div>
+        <div class="game-info">
+          <h3>Blox Clicker 3D</h3>
+          <p>Clicca l'avatar 3D, compra potenziamenti e accumula Platabux!</p>
+          <button class="btn">Gioca Ora</button>
+        </div>
       </div>
-      <div class="upgrade-desc">Aumenta i Platabux per ogni clic.</div>
-      <button id="buy-click" class="btn" onclick="buyClickUpgrade()">Aumenta (+1 Clic) - Costo: 10</button>
-    </div>
 
-    <!-- Potenziamento Auto-Clicker -->
-    <div class="upgrade-card">
-      <div class="upgrade-info">
-        <span>Blox Bot</span>
-        <span id="bot-lvl">Lvl 0</span>
+      <!-- Minigioco 2: In Arrivo / Espansione -->
+      <div class="game-card">
+        <div class="game-thumb">🕹️</div>
+        <div class="game-info">
+          <h3>Blox Runner</h3>
+          <p>Evita gli ostacoli e raccogli monete in questo runner 3D.</p>
+          <button class="btn" style="background:#3a4153; cursor:not-allowed;" disabled>In Arrivo</button>
+        </div>
       </div>
-      <div class="upgrade-desc">Clicca automaticamente per te ogni secondo.</div>
-      <button id="buy-bot" class="btn" onclick="buyBotUpgrade()">Compra Bot (+1/s) - Costo: 50</button>
+
     </div>
 
-    <!-- Tasto Pubblicità / Banner Monetizzazione -->
-    <button class="btn btn-ad" onclick="triggerAdBonus()">
-      🎬 Guarda Pubblicità (+100 Platabux)
+    <!-- Modulo Riscatto Pubblicità dell'Hub -->
+    <h2 class="section-title">Ricompense Esterne</h2>
+    <button class="btn btn-reward" onclick="showRewardAdHub()">
+      🎬 Guarda Pubblicità per +250 Platabux Gratis
     </button>
+  </main>
+
+  <!-- Modal Screen per eseguire il Minigioco scelto -->
+  <div id="game-modal">
+    <div id="game-modal-header">
+      <span id="modal-game-title" style="font-weight: bold;">Blox Platform Game</span>
+      <button class="close-btn" onclick="closeGame()">Chiudi Gioco</button>
+    </div>
+    <iframe id="game-iframe" src=""></iframe>
   </div>
 
   <script>
-    // --- STATO DEL GIOCO ---
-    let state = {
-      platabux: 0,
-      clickPower: 1,
-      clickCost: 10,
-      clickLevel: 1,
-      botPower: 0,
-      botCost: 50,
-      botLevel: 0
+    // --- 1. CONFIGURAZIONE FIREBASE ---
+    const firebaseConfig = {
+      apiKey: "INSERISCI_TUA_API_KEY",
+      authDomain: "tuo-progetto.firebaseapp.com",
+      databaseURL: "https://tuo-progetto-default-rtdb.firebaseio.com",
+      projectId: "tuo-progetto",
+      storageBucket: "tuo-progetto.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
     };
-
-    window.isGamePaused = false;
-
-    // Carica salvataggio
-    function loadGame() {
-      const saved = localStorage.getItem("blox_platform_save");
-      if (saved) {
-        state = { ...state, ...JSON.parse(saved) };
-      }
-      updateUI();
-    }
-
-    // Salva stato
-    function saveGame() {
-      localStorage.setItem("blox_platform_save", JSON.stringify(state));
-    }
-
-    // --- AGGIORNAMENTO UI ---
-    function updateUI() {
-      document.getElementById("platabux-count").innerText = `${Math.floor(state.platabux)} Platabux`;
-      document.getElementById("pps-count").innerText = `+${state.botPower} Platabux/sec`;
-
-      // Aggiorna Bottoni Shop
-      const buyClickBtn = document.getElementById("buy-click");
-      buyClickBtn.innerText = `Aumenta (+1 Clic) - Costo: ${state.clickCost}`;
-      buyClickBtn.disabled = state.platabux < state.clickCost;
-      document.getElementById("click-lvl").innerText = `Lvl ${state.clickLevel}`;
-
-      const buyBotBtn = document.getElementById("buy-bot");
-      buyBotBtn.innerText = `Compra Bot (+1/s) - Costo: ${state.botCost}`;
-      buyBotBtn.disabled = state.platabux < state.botCost;
-      document.getElementById("bot-lvl").innerText = `Lvl ${state.botLevel}`;
-    }
-
-    // --- LOGICA CLICK & POTENZIAMENTI ---
-    function addPlatabux(amount, event = null) {
-      state.platabux += amount;
-      updateUI();
-      saveGame();
-
-      if (event) {
-        showClickPopup(event.clientX, event.clientY, `+${amount}`);
-      }
-    }
-
-    function buyClickUpgrade() {
-      if (state.platabux >= state.clickCost) {
-        state.platabux -= state.clickCost;
-        state.clickPower += 1;
-        state.clickLevel += 1;
-        state.clickCost = Math.floor(state.clickCost * 1.5);
-        updateUI();
-        saveGame();
-      }
-    }
-
-    function buyBotUpgrade() {
-      if (state.platabux >= state.botCost) {
-        state.platabux -= state.botCost;
-        state.botPower += 1;
-        state.botLevel += 1;
-        state.botCost = Math.floor(state.botCost * 1.6);
-        updateUI();
-        saveGame();
-      }
-    }
-
-    // Loop Auto-Clicker
-    setInterval(() => {
-      if (!window.isGamePaused && state.botPower > 0) {
-        addPlatabux(state.botPower);
-      }
-    }, 1000);
-
-    // Animazione Testo Fluttuante
-    function showClickPopup(x, y, text) {
-      const popup = document.createElement("div");
-      popup.className = "click-popup";
-      popup.innerText = text;
-      popup.style.left = `${x - 20}px`;
-      popup.style.top = `${y - 20}px`;
-      document.body.appendChild(popup);
-
-      setTimeout(() => popup.remove(), 800);
-    }
-
-    // --- MONETIZZAZIONE GAMEMONETIZE ---
-    function triggerAdBonus() {
-      if (typeof sdk !== 'undefined' && typeof sdk.showBanner !== 'undefined') {
-        sdk.showBanner();
-        // Assegna il bonus dopo l'interazione
-        addPlatabux(100);
-        alert("Grazie per aver guardato l'annuncio! Hai ottenuto +100 Platabux!");
-      } else {
-        // Fallback locale per test offline o se il banner non è ancora caricato
-        console.log("SDK GameMonetize non pronto o bloccato da AdBlock.");
-        addPlatabux(100);
-      }
-    }
-
-    // --- GRAFICA 3D (THREE.JS) ---
-    let scene, camera, renderer, cube;
-
-    function init3D() {
-      const container = document.getElementById("game-container");
-      const canvas = document.getElementById("canvas-3d");
-
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.z = 5;
-
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-
-      // Luci
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-      scene.add(ambientLight);
-
-      const dirLight = new THREE.DirectionalLight(0x00e5ff, 1.2);
-      dirLight.position.set(5, 5, 5);
-      scene.add(dirLight);
-
-      // Oggetto 3D Cliccabile (Cubo Blox)
-      const geometry = new THREE.BoxGeometry(2, 2, 2);
-      const material = new THREE.MeshStandardMaterial({
-        color: 0x00e5ff,
-        roughness: 0.3,
-        metalness: 0.8
-      });
-      cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-
-      // Gestione Clic sul Cubo 3D
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-
-      canvas.addEventListener("pointerdown", (e) => {
-        if (window.isGamePaused) return;
-
-        const rect = renderer.domElement.getBoundingClientRect();
-        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObject(cube);
-
-        if (intersects.length > 0) {
-          // Animazione di "rimbalzo" al clic
-          cube.scale.set(0.85, 0.85, 0.85);
-          setTimeout(() => cube.scale.set(1, 1, 1), 100);
-
-          addPlatabux(state.clickPower, e);
-        }
-      });
-
-      // Resize della finestra
-      window.addEventListener("resize", () => {
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-      });
-
-      animate();
-    }
-
-    // Loop di rendering 3D
-    function animate() {
-      requestAnimationFrame(animate);
-
-      if (!window.isGamePaused && cube) {
-        cube.rotation.x += 0.005;
-        cube.rotation.y += 0.01;
-      }
-
-      renderer.render(scene, camera);
-    }
-
-    // Avvio del gioco
-    window.onload = () => {
-      loadGame();
-      init3D();
-    };
-  </script>
-</body>
-</html>
