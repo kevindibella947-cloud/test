@@ -1,36 +1,26 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blox Platform - Online & Global</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Blox Platform - Multiplayer Parkour</title>
   
   <!-- Firebase SDK (v9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <!-- Three.js e FBXLoader per visualizzare l'Avatar 3D -->
+  <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/fflate.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
 
   <!-- GameMonetize SDK Integrato -->
   <script type="text/javascript">
      window.SDK_OPTIONS = {
-        gameId: "SOSTITUISCI_CON_IL_TUO_GAME_ID", // Metti qui il tuo ID di GameMonetize
+        gameId: "SOSTITUISCI_CON_IL_TUO_GAME_ID",
         onEvent: function (a) {
            switch (a.name) {
-              case "SDK_GAME_PAUSE":
-                 window.isGamePaused = true;
-                 console.log("GameMonetize: Gioco in Pausa per Annuncio");
-                 break;
-              case "SDK_GAME_START":
-                 window.isGamePaused = false;
-                 console.log("GameMonetize: Gioco Ripreso");
-                 break;
-              case "SDK_READY":
-                 console.log("GameMonetize SDK Pronto");
-                 break;
+              case "SDK_GAME_PAUSE": window.isGamePaused = true; break;
+              case "SDK_GAME_START": window.isGamePaused = false; break;
+              case "SDK_READY": console.log("GameMonetize SDK Pronto"); break;
            }
         }
      };
@@ -41,249 +31,184 @@
   </script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0b0b0e; color: white; min-height: 100vh; display: flex; flex-direction: column; }
-
-    /* NAVBAR */
-    header { background: #16161e; border-bottom: 1px solid #272736; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 20px; font-weight: bold; color: #a855f7; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .stats-bar { display: flex; align-items: center; gap: 15px; }
-    .stat-card { background: #0b0b0e; border: 1px solid #272736; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; }
+    :root{--ink:#16212b;--card:rgba(255,255,255,.92);--lv:#1f6fe0;--sky:#9cc7e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+    html,body{height:100%;margin:0;overflow:hidden;background:var(--sky);color:var(--ink);font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,system-ui,sans-serif;-webkit-user-select:none;user-select:none}
+    
+    /* HEADER / NAVBAR & AUTH STYLES */
+    header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: #16161e; border-bottom: 1px solid #272736; padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; color: white; }
+    .logo { font-size: 18px; font-weight: bold; color: #a855f7; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    .stats-bar { display: flex; align-items: center; gap: 12px; }
+    .stat-card { background: #0b0b0e; border: 1px solid #272736; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
     .coins { color: #eab308; }
     .platabux { color: #3b82f6; }
     .user-info { display: flex; align-items: center; gap: 10px; }
-    .admin-badge { background: linear-gradient(135deg, #9333ea, #3b82f6); color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-    .btn-admin { background: #9333ea; border: none; color: white; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
-    .btn-logout { background: #ef4444; border: none; color: white; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .admin-badge { background: linear-gradient(135deg, #9333ea, #3b82f6); color: white; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
+    .btn-admin { background: #9333ea; border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .btn-logout { background: #ef4444; border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
 
-    /* CONTENITORE PRINCIPALE */
-    main { flex: 1; padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%; }
-    .auth-card { background: #16161e; border: 1px solid #272736; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; margin: 40px auto; text-align: center; }
-    h2 { margin-bottom: 8px; color: #a855f7; }
-    p.subtitle { font-size: 13px; color: #9aa4b8; margin-bottom: 20px; }
-    .input-group { text-align: left; margin-bottom: 14px; }
-    label { display: block; font-size: 11px; color: #a855f7; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-    input { width: 100%; padding: 12px; background: #0b0b0e; border: 1px solid #272736; border-radius: 6px; color: white; font-size: 14px; outline: none; }
-    input:focus { border-color: #a855f7; }
-
-    .btn-main { width: 100%; padding: 12px; background: linear-gradient(135deg, #9333ea, #3b82f6); border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; }
-    .switch-mode { margin-top: 15px; font-size: 13px; color: #9aa4b8; }
+    /* AUTH SCREEN */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 15px; }
+    .auth-card { background: #16161e; border: 1px solid #272736; padding: 30px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .auth-card h2 { margin-bottom: 8px; color: #a855f7; }
+    .auth-card p.subtitle { font-size: 12px; color: #9aa4b8; margin-bottom: 20px; }
+    .input-group { text-align: left; margin-bottom: 12px; }
+    .auth-card label { display: block; font-size: 10px; color: #a855f7; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
+    .auth-card input { width: 100%; padding: 10px; background: #0b0b0e; border: 1px solid #272736; border-radius: 6px; color: white; font-size: 13px; outline: none; }
+    .auth-card input:focus { border-color: #a855f7; }
+    .btn-main { width: 100%; padding: 11px; background: linear-gradient(135deg, #9333ea, #3b82f6); border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 8px; }
+    .switch-mode { margin-top: 12px; font-size: 12px; color: #9aa4b8; }
     .switch-link { color: #3b82f6; font-weight: bold; cursor: pointer; text-decoration: underline; margin-left: 4px; }
-    #msg { font-size: 13px; margin-top: 15px; display: none; padding: 8px; border-radius: 6px; }
+    #msg { font-size: 12px; margin-top: 10px; display: none; padding: 6px; border-radius: 6px; }
     .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
     .success { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; }
 
-    /* HUB GIOCHI */
-    .hub-view { display: none; }
-    .welcome-box { background: linear-gradient(135deg, rgba(147,51,234,0.15), rgba(59,130,246,0.15)); border: 1px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
-    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .game-card { background: #16161e; border: 1px solid #272736; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
-    .game-thumb { width: 100%; height: 160px; background: #272736; display: flex; align-items: center; justify-content: center; font-size: 48px; }
-    .game-body { padding: 15px; }
-    .btn-play { width: 100%; padding: 10px; background: #22c55e; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    /* HUB GIOCHI SCREEN */
+    #hubView { display: none; position: fixed; inset: 0; top: 60px; background: #0b0b0e; z-index: 40; padding: 30px; overflow-y: auto; color: white; }
+    .hub-container { max-width: 900px; margin: 0 auto; }
+    .welcome-box { background: linear-gradient(135deg, rgba(147,51,234,0.15), rgba(59,130,246,0.15)); border: 1px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+    .game-card-hub { background: #16161e; border: 1px solid #272736; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; max-width: 300px; }
+    .game-thumb { width: 100%; height: 140px; background: #272736; display: flex; align-items: center; justify-content: center; font-size: 44px; }
+    .btn-play { width: 100%; padding: 10px; background: #22c55e; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
 
-    /* VISTA SCHERMATA GIOCO CLICKER */
-    .game-view { display: none; }
-    .card-game { background: #16161e; border: 1px solid #272736; padding: 30px; border-radius: 16px; width: 100%; max-width: 520px; margin: 0 auto; text-align: center; }
-    .user-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #272736; }
-    .user-name { font-weight: bold; color: #3b82f6; font-size: 1.1rem; }
-    .btn-back { background: none; border: 1px solid #3b82f6; color: #3b82f6; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+    /* HUD GIOCO PARKOUR */
+    #hud{position:fixed;left:max(12px,env(safe-area-inset-left));top:calc(env(safe-area-inset-top,0px) + 70px);background:var(--card);padding:10px 14px 12px;border-radius:10px;min-width:160px;box-shadow:0 3px 0 rgba(0,0,0,.2);z-index:10;display:none}
+    #lvl{font-size:15px}
+    #L{display:block;font-size:36px;line-height:1.05;color:var(--lv)}
+    #bar{height:8px;background:rgba(127,127,127,.3);border-radius:4px;margin:6px 0;overflow:hidden}
+    #fill{display:block;height:100%;width:0;background:var(--lv);transition:width .25s}
+    #sub{font-size:12px;line-height:1.4}
+    #banner{position:fixed;left:0;right:0;top:26%;text-align:center;font-size:clamp(35px,9vw,75px);font-weight:900;color:#fff;text-shadow:0 4px 0 var(--lv),0 0 14px rgba(0,0,0,.35);opacity:0;transform:scale(.7);transition:opacity .3s,transform .3s;pointer-events:none;z-index:20}
+    #banner.show{opacity:1;transform:scale(1)}
+    #hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 16px);background:var(--card);padding:8px 14px;border-radius:10px;font-size:13px;transition:opacity .5s;z-index:10;display:none}
+    #hint.off{opacity:0}
+    
+    /* TOUCH CONTROLS */
+    #touch{display:none;position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);padding:0 14px;justify-content:space-between;align-items:flex-end;touch-action:none;z-index:10}
+    #touch button{width:52px;height:52px;border:0;border-radius:12px;background:var(--card);color:var(--ink);font-size:20px;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+    #touch .pad{display:grid;grid-template-columns:repeat(3,52px);gap:5px}
+    #touch .pad button:nth-child(1){grid-column:2}
+    #touch .pad button:nth-child(4){grid-column:2}
+    #touch #j{width:85px;height:85px;font-size:16px;font-weight:700;background:var(--lv);color:#fff}
+    @media (pointer:coarse){#touch{display:flex}}
 
-    /* BOX AVVISO REGOLE */
-    .notice-box { background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; padding: 12px; border-radius: 8px; font-size: 13px; color: #93c5fd; margin-bottom: 20px; text-align: center; line-height: 1.4; }
-    .notice-box strong { color: #3b82f6; }
-
-    .counter-container { font-size: 2.2rem; font-weight: bold; margin-bottom: 10px; color: #ffffff; }
-    .progress-info { font-size: 14px; color: #eab308; margin-bottom: 20px; font-weight: bold; }
-
-    .btn-wrapper { position: relative; margin-bottom: 20px; }
-    .click-btn { padding: 25px 50px; font-size: 1.8rem; font-weight: bold; color: white; background: linear-gradient(145deg, #007bff, #0056b3); border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4); outline: none; user-select: none; }
-    .click-btn:active { transform: scale(0.92); }
-
-    .floating-text { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; font-weight: bold; color: #22c55e; pointer-events: none; animation: floatUp 0.7s ease-out forwards; }
-    @keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -60px); } }
-
-    .claim-btn { width: 100%; padding: 12px 20px; background: linear-gradient(135deg, #3b82f6, #9333ea); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 10px; display: none; }
-    .save-btn { width: 100%; padding: 12px 20px; background-color: #22c55e; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 25px; }
-
-    .leaderboard-container { width: 100%; border-top: 1px solid #272736; padding-top: 20px; text-align: left; }
-    .leaderboard-container h2 { font-size: 1.2rem; margin-bottom: 15px; text-align: center; color: #a855f7; }
-    .leaderboard-list { list-style: none; padding: 0; margin: 0; }
-    .leaderboard-item { display: flex; justify-content: space-between; padding: 10px 15px; background: #0b0b0e; border: 1px solid #272736; border-radius: 8px; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-    .empty-msg { text-align: center; color: #888; font-style: italic; }
-
-    /* CONTENITORI AVATAR 3D */
-    .avatar-3d-box { width: 100px; height: 100px; background: rgba(0,0,0,0.3); border-radius: 50%; overflow: hidden; border: 2px solid #a855f7; }
-    .avatar-3d-game { width: 150px; height: 150px; margin: 0 auto 15px auto; background: rgba(0,0,0,0.3); border-radius: 12px; border: 2px solid #3b82f6; overflow: hidden; }
-
-    /* MODALI */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 100; align-items: center; justify-content: center; padding: 15px; }
-    .modal { background: #16161e; border: 1px solid #a855f7; border-radius: 12px; width: 100%; max-width: 600px; height: 80vh; max-height: 600px; padding: 20px; display: flex; flex-direction: column; }
-    .modal-captcha { background: #16161e; border: 1px solid #a855f7; border-radius: 12px; width: 100%; max-width: 360px; padding: 25px; text-align: center; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #272736; padding-bottom: 10px; }
-    .btn-close { background: none; border: none; color: #ef4444; font-size: 18px; font-weight: bold; cursor: pointer; }
-    .search-box { margin-bottom: 12px; }
-    .account-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 6px; }
-    .account-item { background: #0b0b0e; border: 1px solid #272736; padding: 12px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
-    .giveaway-controls { display: flex; gap: 6px; align-items: center; background: #16161e; padding: 8px; border-radius: 6px; flex-wrap: wrap; }
-    .giveaway-controls input { width: 90px; padding: 6px; background: #0b0b0e; border: 1px solid #272736; border-radius: 4px; color: white; font-size: 12px; }
-    .btn-give { padding: 6px 10px; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
-    .btn-give-coin { background: #eab308; color: black; }
-    .btn-give-pbux { background: #3b82f6; color: white; }
+    /* ADMIN MODAL */
+    .admin-modal-content { background: #16161e; border: 1px solid #a855f7; border-radius: 12px; width: 100%; max-width: 550px; height: 75vh; padding: 20px; display: flex; flex-direction: column; color: white; }
+    .account-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .account-item { background: #0b0b0e; border: 1px solid #272736; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
   </style>
 </head>
 <body>
 
+  <!-- NAVBAR SUPERIORE -->
   <header>
-    <div class="logo" onclick="apriHub()">🎮 BLOX PLATFORM</div>
+    <div class="logo" onclick="tornaAlMenu()">🎮 BLOX PLATFORM</div>
     <div class="stats-bar" id="statsHeader" style="display: none;">
       <div class="stat-card coins">🪙 <span id="coinDisplay">0</span></div>
       <div class="stat-card platabux">💎 <span id="platabuxDisplay">0</span></div>
     </div>
     <div class="user-info" id="userHeader" style="display: none;">
-      <button class="btn-admin" id="adminBtn" onclick="apriSupervisione()">👑 Pannello Admin</button>
+      <button class="btn-admin" id="adminBtn" onclick="apriAdmin()" style="display:none;">👑 Admin</button>
       <span id="adminTagDisplay" class="admin-badge" style="display:none;">👑 ADMIN</span>
-      <span id="usernameDisplay" style="font-size: 14px; font-weight: bold;">-</span>
+      <span id="usernameDisplay" style="font-size: 13px; font-weight: bold;">-</span>
       <button class="btn-logout" onclick="logout()">Esci</button>
     </div>
   </header>
 
-  <main>
-    <!-- FORM ACCESSO / REGISTRAZIONE -->
-    <div class="auth-card" id="authView">
+  <!-- MODALE AUTH (LOGIN / REGISTRAZIONE) -->
+  <div class="modal-overlay" id="authModal">
+    <div class="auth-card">
       <h2 id="title">BLOX PLATFORM</h2>
       <p class="subtitle" id="subtitle">Inserisci le credenziali per accedere</p>
       
       <div class="input-group">
         <label>Nickname</label>
-        <input type="text" id="username" placeholder="Inserisci nickname...">
+        <input type="text" id="usernameInput" placeholder="Inserisci nickname...">
       </div>
       <div class="input-group">
         <label>Password</label>
-        <input type="password" id="password" placeholder="Inserisci password...">
+        <input type="password" id="passwordInput" placeholder="Inserisci password...">
       </div>
 
-      <button class="btn-main" id="submitBtn" onclick="inviaForm()">ACCEDI</button>
+      <button class="btn-main" id="submitAuthBtn" onclick="gestisciAuth()">ACCEDI</button>
 
       <div class="switch-mode" id="switchText">
-        Non hai un account? <span class="switch-link" onclick="cambiaModalita()">Registrati</span>
+        Non hai un account? <span class="switch-link" onclick="cambiaModalitaAuth()">Registrati</span>
       </div>
       <div id="msg"></div>
     </div>
+  </div>
 
-    <!-- HUB GIOCHI -->
-    <div class="hub-view" id="hubView">
-      <div class="welcome-box">
-        <div>
-          <h1 style="color:#a855f7; font-size:24px;">Bentornato, <span id="welcomeUser">-</span>! 👋</h1>
-          <p style="color:#9aa4b8; font-size:14px; margin-top:5px;">Benvenuto su Blox Platform Global Online!</p>
-        </div>
-        <!-- VISTA AVATAR HUB -->
-        <div class="avatar-3d-box" id="avatarHubContainer"></div>
-      </div>
-
-      <h2 style="margin-bottom: 15px; font-size: 20px;">🕹️ Esperienze Disponibili</h2>
-      <div class="games-grid">
-        <div class="game-card">
-          <div>
-            <div class="game-thumb">🖱️💎</div>
-            <div class="game-body">
-              <h3 style="font-size: 18px; margin-bottom: 5px;">Platabux Clicker</h3>
-              <p style="font-size: 12px; color: #9aa4b8;">Fai 10.000 punti per vincere 500 Platabux e scala la classifica globale!</p>
-            </div>
-          </div>
-          <div style="padding: 15px; padding-top: 0;">
-            <button class="btn-play" onclick="avviaClickerGame()">GIOCA ORA</button>
-          </div>
-        </div>
-
-        <div class="game-card">
-          <div>
-            <div class="game-thumb">⚔️</div>
-            <div class="game-body">
-              <h3 style="font-size: 18px; margin-bottom: 5px;">Blocky Arena 3D</h3>
-              <p style="font-size: 12px; color: #9aa4b8;">Combatti nell'arena col tuo avatar!</p>
-            </div>
-          </div>
-          <div style="padding: 15px; padding-top: 0;">
-            <button class="btn-play" onclick="alert('In arrivo prossimamente!')">GIOCA ORA</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCHERMATA DEL GIOCO CLICKER -->
-    <div class="game-view" id="gameView">
-      <div class="card-game">
-        <div class="user-bar">
-          <span>Giocatore: <span class="user-name" id="currentUsername"></span></span>
-          <button class="btn-back" onclick="apriHub()">⬅️ Torna al Hub</button>
-        </div>
-
-        <!-- AVATAR 3D DENTRO IL GIOCO -->
-        <div class="avatar-3d-game" id="avatarGameContainer"></div>
-
-        <!-- AVVISO REGOLA PLATABUX -->
-        <div class="notice-box">
-          📢 <strong>REGOLA PLATABUX:</strong><br>
-          Ogni <strong>10.000 Punti</strong> effettuati riceverai in premio <strong>+500 Platabux 💎</strong>!<br>
-          Il traguardo si ripete all'infinito (10k, 20k, 30k...).
-        </div>
-
-        <div class="counter-container">
-          Punteggio Sessione: <span id="clickScore">0</span>
-        </div>
-
-        <div class="progress-info" id="progressInfo">
-          Prossimo premio tra: 10.000 click
-        </div>
-
-        <div class="btn-wrapper" id="btnWrapper">
-          <button class="click-btn" id="clickBtn" onclick="faiClick()">Cliccami!</button>
-        </div>
-
-        <button class="claim-btn" id="claimBtn" onclick="riscattaPlatabux()">🎁 RISCATTA +500 PLATABUX! 🎁</button>
-        <button class="save-btn" onclick="salvaPunteggio()">💾 Salva Punteggio in Classifica</button>
-
-        <div class="leaderboard-container">
-          <h2>🏆 Classifica Globale TOP 5</h2>
-          <ul class="leaderboard-list" id="leaderboardList">
-            <li class="empty-msg">Caricamento classifica globale...</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- POPUP CAPTCHA ADMIN -->
-  <div class="modal-overlay" id="captchaModal">
-    <div class="modal-captcha">
-      <h3 style="color:#a855f7; margin-bottom:10px;">🛡️ Verifica Captcha Admin</h3>
-      <p style="font-size:12px; color:#9aa4b8; margin-bottom:15px;">Account Admin rilevato. Inserisci il codice Captcha:</p>
+  <!-- MODALE CAPTCHA ADMIN -->
+  <div class="modal-overlay" id="captchaModal" style="display: none;">
+    <div class="auth-card" style="max-width:320px;">
+      <h3 style="color:#a855f7; margin-bottom:10px;">🛡️ Verifica Captcha</h3>
+      <p style="font-size:11px; color:#9aa4b8; margin-bottom:12px;">Inserisci il codice di sicurezza Admin:</p>
       <div class="input-group">
-        <input type="text" id="popupCaptchaInput" placeholder="Codice captcha..." style="text-align:center; font-weight:bold;">
+        <input type="text" id="popupCaptchaInput" placeholder="Codice..." style="text-align:center; font-weight:bold;">
       </div>
-      <button class="btn-main" onclick="confermaCaptchaPopup()">VERIFICA ED ENTRA</button>
-      <div id="captchaError" style="font-size:12px; color:#ef4444; margin-top:10px; display:none;">Codice Captcha errato!</div>
+      <button class="btn-main" onclick="verificaCaptchaAdmin()">VERIFICA</button>
+      <div id="captchaError" style="font-size:11px; color:#ef4444; margin-top:8px; display:none;">Codice errato!</div>
     </div>
   </div>
 
   <!-- PANNELLO ADMIN -->
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 style="color:#a855f7;">👑 Pannello Gestione Donazioni</h3>
-        <button class="btn-close" onclick="chiudiSupervisione()">✕</button>
+  <div class="modal-overlay" id="adminModal" style="display: none;">
+    <div class="admin-modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #272736; padding-bottom:8px;">
+        <h3 style="color:#a855f7;">👑 Gestione Utenti Cloud</h3>
+        <button onclick="document.getElementById('adminModal').style.display='none'" style="background:none; border:none; color:#ef4444; font-size:18px; font-weight:bold; cursor:pointer;">✕</button>
       </div>
-      <div class="search-box">
-        <input type="text" id="searchInput" style="width:100%; padding:10px; background:#0b0b0e; border:1px solid #a855f7; border-radius:6px; color:white;" placeholder="🔍 Cerca utente per Nickname..." oninput="renderAccountList()">
+      <div style="margin-top:10px;">
+        <input type="text" id="searchUserInput" placeholder="🔍 Cerca utente..." oninput="renderAccountList()" style="width:100%; padding:8px; background:#0b0b0e; border:1px solid #a855f7; border-radius:6px; color:white;">
       </div>
       <div class="account-list" id="accountListContainer"></div>
     </div>
   </div>
 
+  <!-- HUB PRINCIPALE -->
+  <div id="hubView">
+    <div class="hub-container">
+      <div class="welcome-box">
+        <div>
+          <h1 style="color:#a855f7; font-size:22px;">Bentornato, <span id="welcomeUser">-</span>! 👋</h1>
+          <p style="color:#9aa4b8; font-size:13px; margin-top:4px;">Seleziona un'esperienza ed entra nel mondo multiplayer globale.</p>
+        </div>
+      </div>
+
+      <h2 style="margin-bottom: 12px; font-size: 18px;">🕹️ Esperienze</h2>
+      <div class="game-card-hub">
+        <div class="game-thumb">🏃‍♂️💨</div>
+        <div style="padding: 12px;">
+          <h3 style="font-size: 16px; margin-bottom: 4px;">Infinite Parkour 3D</h3>
+          <p style="font-size: 11px; color: #9aa4b8; margin-bottom: 10px;">Salta sulle piattaforme e scala i livelli insieme agli altri giocatori online!</p>
+          <button class="btn-play" onclick="avviaParkourGame()">GIOCA ORA</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD DEL GIOCO PARKOUR -->
+  <div id="hud">
+    <span id="lvl">Livello <b id="L">1</b></span>
+    <div id="bar"><i id="fill"></i></div>
+    <div id="sub">Piattaforme: <span id="p">0</span> su 10<br>Cadute: <span id="f">0</span></div>
+  </div>
+  <div id="banner"></div>
+  <div id="hint">Usa WASD o Frecce per muoverti, Spazio per saltare</div>
+  
+  <!-- CONTROLLER TOUCH -->
+  <div id="touch">
+    <div class="pad">
+      <button data-k="ArrowUp">▲</button>
+      <button data-k="ArrowLeft">◀</button>
+      <button data-k="ArrowDown">▼</button>
+      <button data-k="ArrowRight">▶</button>
+    </div>
+    <button id="j" data-k="Space">Salta</button>
+  </div>
+
 <script>
-  // CONFIGURAZIONE DATABASE FIREBASE REALTIME
+  // CONFIGURAZIONE FIREBASE
   const firebaseConfig = {
     databaseURL: "https://blox-platform-67f39-default-rtdb.europe-west1.firebasedatabase.app/"
   };
@@ -293,449 +218,370 @@
   const OWNER_NAME = "huggy_huggy223";
   const OWNER_PASS = "Kevindibella18";
   const OWNER_CAPTCHA = "947947";
-
   const ADMIN_COUSIN = "Exegreen4999";
   const ADMIN_COUSIN_PASS = "Exegreen4999";
   const ADMIN_COUSIN_CAPTCHA = "4999";
 
   let isLoginMode = true;
   let currentUser = localStorage.getItem('bloxi_session');
-  let pendingUserLogin = null;
-  
-  let clickerScore = 0;
-  let unrewardedClicks = 0;
-  const TARGET_CLICKS = 10000;
-  const REWARD_PLATABUX = 500;
-  window.isGamePaused = false;
+  let pendingAdminKey = null;
+  let inGame = false;
 
-  function sanitizeKey(key) {
-    return key.replace(/[.#$\[\]]/g, "_");
-  }
-
+  function sanitizeKey(k) { return k.replace(/[.#$\[\]]/g, "_"); }
   function formattaNumero(num) {
     if (!num) return "0";
     if (num < 1000) return num.toString();
-    const simboli = [
-      { val: 1e12, lett: 'T' },
-      { val: 1e9, lett: 'B' },
-      { val: 1e6, lett: 'M' },
-      { val: 1e3, lett: 'k' }
-    ];
+    const simboli = [{ val: 1e6, lett: 'M' }, { val: 1e3, lett: 'k' }];
     for (let i = 0; i < simboli.length; i++) {
-      if (num >= simboli[i].val) {
-        let res = (num / simboli[i].val).toFixed(1);
-        if (res.endsWith('.0')) res = res.slice(0, -2);
-        return res + simboli[i].lett;
-      }
+      if (num >= simboli[i].val) return (num / simboli[i].val).toFixed(1) + simboli[i].lett;
     }
     return num.toString();
   }
 
-  // --- RENDERING AVATAR 3D CON THREE.JS ---
-  function caricaAvatar3D(containerId, fbxPath = 'avatar.fbx') {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 100, 250);
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    dirLight.position.set(100, 200, 100);
-    scene.add(dirLight);
-
-    let avatarModel = null;
-    const loader = new THREE.FBXLoader();
-    
-    loader.load(fbxPath, (object) => {
-      avatarModel = object;
-      avatarModel.scale.set(0.8, 0.8, 0.8);
-      avatarModel.position.set(0, -50, 0);
-      scene.add(avatarModel);
-    }, undefined, (err) => {
-      const group = new THREE.Group();
-      const matSkin = new THREE.MeshPhongMaterial({ color: 0xffcc99 });
-      const matShirt = new THREE.MeshPhongMaterial({ color: 0xa855f7 });
-      const matPants = new THREE.MeshPhongMaterial({ color: 0x3b82f6 });
-
-      const head = new THREE.Mesh(new THREE.BoxGeometry(30, 30, 30), matSkin);
-      head.position.y = 50;
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(40, 50, 20), matShirt);
-      torso.position.y = 10;
-      const leg1 = new THREE.Mesh(new THREE.BoxGeometry(18, 45, 18), matPants);
-      leg1.position.set(-10, -35, 0);
-      const leg2 = new THREE.Mesh(new THREE.BoxGeometry(18, 45, 18), matPants);
-      leg2.position.set(10, -35, 0);
-
-      group.add(head, torso, leg1, leg2);
-      avatarModel = group;
-      scene.add(avatarModel);
-    });
-
-    function animate() {
-      requestAnimationFrame(animate);
-      if (avatarModel && !window.isGamePaused) {
-        avatarModel.rotation.y += 0.015;
-      }
-      renderer.render(scene, camera);
-    }
-    animate();
-  }
-
-  // INIZIALIZZAZIONE ADMIN SUL CLOUD
-  function initAdminAccounts() {
-    const ownerKey = sanitizeKey(OWNER_NAME);
-    const adminKey = sanitizeKey(ADMIN_COUSIN);
-
-    dbRef.ref('users/' + ownerKey).update({
-      username: OWNER_NAME, password: OWNER_PASS, role: "owner", captcha: OWNER_CAPTCHA
-    });
-    dbRef.ref('users/' + adminKey).update({
-      username: ADMIN_COUSIN, password: ADMIN_COUSIN_PASS, role: "admin", captcha: ADMIN_COUSIN_CAPTCHA
-    });
-  }
-  initAdminAccounts();
-
-  /* CLASSIFICA IN TEMPO REALE */
-  dbRef.ref('leaderboard').on('value', (snapshot) => {
-    const data = snapshot.val() || {};
-    const leaderboardList = document.getElementById('leaderboardList');
-    if (!leaderboardList) return;
-    leaderboardList.innerHTML = '';
-
-    let arr = Object.values(data);
-    if (arr.length === 0) {
-      leaderboardList.innerHTML = '<li class="empty-msg">Nessun punteggio registrato</li>';
-      return;
-    }
-
-    arr.sort((a, b) => b.score - a.score);
-    const top5 = arr.slice(0, 5);
-
-    top5.forEach((item, index) => {
-      const li = document.createElement('li');
-      li.classList.add('leaderboard-item');
-      const isCurrent = currentUser && item.name.toLowerCase() === currentUser.toLowerCase() ? ' (Tu)' : '';
-      li.innerHTML = `<span>#${index + 1} ${escapeHtml(item.name)}${isCurrent}</span> <span>${item.score} pt</span>`;
-      leaderboardList.appendChild(li);
-    });
-  });
-
-  /* NAVIGAZIONE VISTE */
-  function apriHub() {
-    if (!currentUser) return;
-    document.getElementById('authView').style.display = "none";
-    document.getElementById('hubView').style.display = "block";
-    document.getElementById('gameView').style.display = "none";
-    caricaInterfaccia();
-    setTimeout(() => { caricaAvatar3D('avatarHubContainer'); }, 100);
-  }
-
-  function avviaClickerGame() {
-    // Chiama l'SDK GameMonetize all'avvio del minigioco
-    if (typeof sdk !== 'undefined' && typeof sdk.showBanner !== 'undefined') {
-       sdk.showBanner();
-    }
-
-    document.getElementById('authView').style.display = "none";
-    document.getElementById('hubView').style.display = "none";
-    document.getElementById('gameView').style.display = "block";
-
-    document.getElementById('currentUsername').textContent = currentUser;
-    clickerScore = 0;
-    unrewardedClicks = 0;
-    aggiornaInterfacciaClicker();
-    setTimeout(() => { caricaAvatar3D('avatarGameContainer'); }, 100);
-  }
-
-  /* LOGICA GIOCO CLICKER */
-  function faiClick() {
-    if (window.isGamePaused) return;
-
-    clickerScore++;
-    unrewardedClicks++;
-
-    aggiornaInterfacciaClicker();
-    
-    const floatEl = document.createElement('div');
-    floatEl.classList.add('floating-text');
-    floatEl.textContent = '+1';
-    const wrapper = document.getElementById('btnWrapper');
-    wrapper.appendChild(floatEl);
-    floatEl.addEventListener('animationend', () => { floatEl.remove(); });
-
-    if (unrewardedClicks >= TARGET_CLICKS) {
-      document.getElementById('claimBtn').style.display = "block";
-    }
-  }
-
-  function aggiornaInterfacciaClicker() {
-    document.getElementById('clickScore').textContent = formattaNumero(clickerScore);
-    const rimasti = TARGET_CLICKS - unrewardedClicks;
-    
-    if (rimasti > 0) {
-      document.getElementById('progressInfo').textContent = `Prossimo premio (+${REWARD_PLATABUX} Platabux): mancano ${formattaNumero(rimasti)} click`;
-      document.getElementById('claimBtn').style.display = "none";
-    } else {
-      document.getElementById('progressInfo').textContent = `🎉 HAI RAGGIUNTO 10.000 PUNTI! Riscatta il tuo premio!`;
-      document.getElementById('claimBtn').style.display = "block";
-    }
-  }
-
-  function riscattaPlatabux() {
-    if (unrewardedClicks < TARGET_CLICKS) return;
-
-    const userKey = sanitizeKey(currentUser);
-
-    dbRef.ref('users/' + userKey).transaction((userData) => {
-      if (userData) {
-        userData.platabux = (userData.platabux || 0) + REWARD_PLATABUX;
-      }
-      return userData;
-    }, (error, committed) => {
-      if (committed) {
-        alert(`🎉 Complimenti! Hai raggiunto 10.000 punti e hai guadagnato +${REWARD_PLATABUX} Platabux 💎!`);
-        unrewardedClicks -= TARGET_CLICKS;
-        aggiornaInterfacciaClicker();
-        caricaInterfaccia();
-      }
-    });
-  }
-
-  function salvaPunteggio() {
-    if (clickerScore === 0) return alert('Fai almeno un click prima di salvare!');
-
-    const userKey = sanitizeKey(currentUser);
-
-    dbRef.ref('leaderboard/' + userKey).once('value', (snap) => {
-      const existing = snap.val();
-      if (!existing || clickerScore > existing.score) {
-        dbRef.ref('leaderboard/' + userKey).set({ name: currentUser, score: clickerScore });
-        alert(`Nuovo record globale salvato: ${clickerScore} punti!`);
-      } else {
-        alert(`Punteggio aggiornato!\n(Il tuo record massimo in classifica rimane ${existing.score} punti)`);
-      }
-    });
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
-
-  /* AUTH & LOGIN */
-  function cambiaModalita() {
+  // --- GESTIONE AUTH ---
+  function cambiaModalitaAuth() {
     isLoginMode = !isLoginMode;
-    document.getElementById('subtitle').textContent = isLoginMode ? "Inserisci le credenziali per accedere" : "Crea un nuovo account per iniziare";
-    document.getElementById('submitBtn').textContent = isLoginMode ? "ACCEDI" : "REGISTRATI";
+    document.getElementById('title').textContent = isLoginMode ? "BLOX PLATFORM" : "REGISTRAZIONE";
+    document.getElementById('subtitle').textContent = isLoginMode ? "Inserisci le credenziali per accedere" : "Crea un nuovo account";
+    document.getElementById('submitAuthBtn').textContent = isLoginMode ? "ACCEDI" : "REGISTRATI";
     document.getElementById('switchText').innerHTML = isLoginMode ? 
-      'Non hai un account? <span class="switch-link" onclick="cambiaModalita()">Registrati</span>' : 
-      'Hai già un account? <span class="switch-link" onclick="cambiaModalita()">Accedi</span>';
+      'Non hai un account? <span class="switch-link" onclick="cambiaModalitaAuth()">Registrati</span>' : 
+      'Hai già un account? <span class="switch-link" onclick="cambiaModalitaAuth()">Accedi</span>';
   }
 
-  function mostraMessaggio(testo, tipo) {
-    const msgEl = document.getElementById('msg');
-    msgEl.textContent = testo;
-    msgEl.className = tipo;
-    msgEl.style.display = "block";
+  function mostraMsg(txt, tipo) {
+    const m = document.getElementById('msg');
+    m.textContent = txt; m.className = tipo; m.style.display = "block";
   }
 
-  function inviaForm() {
-    const user = document.getElementById('username').value.trim();
-    const pass = document.getElementById('password').value.trim();
+  function gestisciAuth() {
+    const user = document.getElementById('usernameInput').value.trim();
+    const pass = document.getElementById('passwordInput').value.trim();
+    if (!user || !pass) return mostraMsg("Inserisci tutti i campi!", "error");
 
-    if (!user || !pass) return mostraMessaggio("Inserisci Nickname e Password!", "error");
-
-    const userKey = sanitizeKey(user);
-
-    dbRef.ref('users/' + userKey).once('value', (snap) => {
-      const userData = snap.val();
-
+    const uKey = sanitizeKey(user);
+    dbRef.ref('users/' + uKey).once('value', snap => {
+      const data = snap.val();
       if (isLoginMode) {
-        if (!userData || userData.password !== pass) {
-          return mostraMessaggio("Credenziali errate!", "error");
-        }
-        
-        if (userData.role === "owner" || userData.role === "admin") {
-          pendingUserLogin = user;
+        if (!data || data.password !== pass) return mostraMsg("Credenziali non valide!", "error");
+        if (data.role === "owner" || data.role === "admin") {
+          pendingAdminKey = user;
           document.getElementById('popupCaptchaInput').value = "";
-          document.getElementById('captchaError').style.display = "none";
           document.getElementById('captchaModal').style.display = "flex";
           return;
         }
-
-        completaLogin(user);
+        completaAccesso(user);
       } else {
-        if (userData) return mostraMessaggio("Nickname già occupato!", "error");
-
-        dbRef.ref('users/' + userKey).set({
-          username: user,
-          password: pass,
-          coins: 100,
-          platabux: 0,
-          role: "user"
-        }, (err) => {
-          if (!err) completaLogin(user);
+        if (data) return mostraMsg("Nickname già esistente!", "error");
+        dbRef.ref('users/' + uKey).set({ username: user, password: pass, coins: 100, platabux: 0, role: "user" }, err => {
+          if (!err) completaAccesso(user);
         });
       }
     });
   }
 
-  function confermaCaptchaPopup() {
-    if (!pendingUserLogin) return;
-    const userKey = sanitizeKey(pendingUserLogin);
-
-    dbRef.ref('users/' + userKey).once('value', (snap) => {
-      const userData = snap.val();
-      const inputCaptcha = document.getElementById('popupCaptchaInput').value.trim();
-
-      if (userData && inputCaptcha === userData.captcha) {
+  function verificaCaptchaAdmin() {
+    const uKey = sanitizeKey(pendingAdminKey);
+    dbRef.ref('users/' + uKey).once('value', snap => {
+      const data = snap.val();
+      const val = document.getElementById('popupCaptchaInput').value.trim();
+      if (data && val === data.captcha) {
         document.getElementById('captchaModal').style.display = "none";
-        completaLogin(pendingUserLogin);
-        pendingUserLogin = null;
+        completaAccesso(pendingAdminKey);
+        pendingAdminKey = null;
       } else {
         document.getElementById('captchaError').style.display = "block";
       }
     });
   }
 
-  function completaLogin(user) {
+  function completaAccesso(user) {
     localStorage.setItem('bloxi_session', user);
     currentUser = user;
-    mostraMessaggio("Accesso completato...", "success");
-    setTimeout(() => { apriHub(); }, 500);
-  }
-
-  function caricaInterfaccia() {
-    if (!currentUser) {
-      document.getElementById('authView').style.display = "block";
-      document.getElementById('hubView').style.display = "none";
-      document.getElementById('gameView').style.display = "none";
-      document.getElementById('statsHeader').style.display = "none";
-      document.getElementById('userHeader').style.display = "none";
-      return;
-    }
-
-    const userKey = sanitizeKey(currentUser);
-    dbRef.ref('users/' + userKey).on('value', (snap) => {
-      const userData = snap.val();
-      if (!userData) return;
-
-      document.getElementById('statsHeader').style.display = "flex";
-      document.getElementById('userHeader').style.display = "flex";
-
-      document.getElementById('usernameDisplay').textContent = currentUser;
-      document.getElementById('welcomeUser').textContent = currentUser;
-      
-      document.getElementById('coinDisplay').textContent = formattaNumero(userData.coins || 0);
-      document.getElementById('platabuxDisplay').textContent = formattaNumero(userData.platabux || 0);
-
-      if (userData.role === "owner" || userData.role === "admin") {
-        document.getElementById('adminTagDisplay').style.display = "inline-block";
-        document.getElementById('adminBtn').style.display = (currentUser === OWNER_NAME) ? "inline-block" : "none";
-      } else {
-        document.getElementById('adminBtn').style.display = "none";
-        document.getElementById('adminTagDisplay').style.display = "none";
-      }
-    });
+    document.getElementById('authModal').style.display = "none";
+    inizializzaInterfacciaUtente();
   }
 
   function logout() {
     localStorage.removeItem('bloxi_session');
-    currentUser = null;
     location.reload();
   }
 
-  /* ADMIN */
-  function apriSupervisione() {
-    document.getElementById('searchInput').value = "";
-    renderAccountList();
+  function inizializzaInterfacciaUtente() {
+    const uKey = sanitizeKey(currentUser);
+    dbRef.ref('users/' + uKey).on('value', snap => {
+      const u = snap.val();
+      if (!u) return;
+      document.getElementById('statsHeader').style.display = "flex";
+      document.getElementById('userHeader').style.display = "flex";
+      document.getElementById('usernameDisplay').textContent = currentUser;
+      document.getElementById('welcomeUser').textContent = currentUser;
+      document.getElementById('coinDisplay').textContent = formattaNumero(u.coins || 0);
+      document.getElementById('platabuxDisplay').textContent = formattaNumero(u.platabux || 0);
+
+      if (u.role === "owner" || u.role === "admin") {
+        document.getElementById('adminTagDisplay').style.display = "inline-block";
+        document.getElementById('adminBtn').style.display = currentUser === OWNER_NAME ? "inline-block" : "none";
+      }
+    });
+    tornaAlMenu();
+  }
+
+  function tornaAlMenu() {
+    inGame = false;
+    document.getElementById('hubView').style.display = "block";
+    document.getElementById('hud').style.display = "none";
+    document.getElementById('hint').style.display = "none";
+    document.getElementById('touch').style.display = "none";
+    if (window.parkourSceneContainer) window.parkourSceneContainer.style.display = "none";
+  }
+
+  function apriAdmin() {
     document.getElementById('adminModal').style.display = "flex";
+    renderAccountList();
   }
 
   function renderAccountList() {
-    const container = document.getElementById('accountListContainer');
-    const filterText = document.getElementById('searchInput').value.toLowerCase().trim();
-
-    dbRef.ref('users').once('value', (snap) => {
-      const usersData = snap.val() || {};
+    const filter = document.getElementById('searchUserInput').value.toLowerCase().trim();
+    dbRef.ref('users').once('value', snap => {
+      const d = snap.val() || {};
+      const container = document.getElementById('accountListContainer');
       container.innerHTML = "";
-
-      const keys = Object.keys(usersData).filter(u => u.toLowerCase().includes(filterText));
-
-      if (keys.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:#8a94a6; padding:20px;">Nessun utente trovato</div>`;
-        return;
-      }
-
-      keys.forEach(k => {
-        const u = usersData[k];
-        const item = document.createElement('div');
-        item.className = "account-item";
-        
-        let giveawayControlsHTML = "";
-        if (currentUser === OWNER_NAME) {
-          giveawayControlsHTML = `
-            <div class="giveaway-controls">
-              <input type="number" id="amt_${k}" value="1000" min="1">
-              <button class="btn-give btn-give-coin" onclick="donare('${k}', 'coins')">+🪙 Monete</button>
-              <button class="btn-give btn-give-pbux" onclick="donare('${k}', 'platabux')">+💎 Platabux</button>
-            </div>
-          `;
-        }
-
-        item.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <strong>${u.username}</strong> ${(u.role === "owner" || u.role === "admin") ? '<span class="admin-badge">👑 ADMIN</span>' : ''}
-              <div style="font-size:11px; color:#8a94a6;">Password: ${u.password}</div>
-            </div>
-            <div>
-              <span style="color:#eab308; font-weight:bold; margin-right:8px;">🪙 ${formattaNumero(u.coins || 0)}</span>
-              <span style="color:#3b82f6; font-weight:bold;">💎 ${formattaNumero(u.platabux || 0)}</span>
-            </div>
-          </div>
-          ${giveawayControlsHTML}
-        `;
-        container.appendChild(item);
+      Object.keys(d).filter(k => k.toLowerCase().includes(filter)).forEach(k => {
+        const u = d[k];
+        const div = document.createElement('div');
+        div.className = "account-item";
+        div.innerHTML = `<span><strong>${u.username}</strong></span> <span style="color:#eab308;">🪙 ${formattaNumero(u.coins)}</span> <span style="color:#3b82f6;">💎 ${formattaNumero(u.platabux)}</span>`;
+        container.appendChild(div);
       });
     });
   }
 
-  function donare(targetUserKey, tipo) {
-    const inputEl = document.getElementById(`amt_${targetUserKey}`);
-    const val = parseInt(inputEl.value);
-    if (isNaN(val) || val <= 0) return alert("Inserisci una quantità valida!");
-
-    dbRef.ref('users/' + targetUserKey).transaction((uData) => {
-      if (uData) {
-        uData[tipo] = (uData[tipo] || 0) + val;
-      }
-      return uData;
-    }, (err, committed) => {
-      if (committed) {
-        alert(`Donazione effettuata sul Cloud!`);
-        renderAccountList();
-      }
-    });
-  }
-
-  function chiudiSupervisione() {
-    document.getElementById('adminModal').style.display = "none";
-  }
+  // Inizializzazione account owner sul cloud
+  dbRef.ref('users/' + sanitizeKey(OWNER_NAME)).update({ username: OWNER_NAME, password: OWNER_PASS, role: "owner", captcha: OWNER_CAPTCHA });
+  dbRef.ref('users/' + sanitizeKey(ADMIN_COUSIN)).update({ username: ADMIN_COUSIN, password: ADMIN_COUSIN_PASS, role: "admin", captcha: ADMIN_COUSIN_CAPTCHA });
 
   if (currentUser) {
-    apriHub();
-  } else {
-    caricaInterfaccia();
+    document.getElementById('authModal').style.display = "none";
+    inizializzaInterfacciaUtente();
+  }
+
+  // --- MOTORE DEL GIOCO PARKOUR 3D + NOOB MULTIPLAYER ---
+  function avviaParkourGame() {
+    if (typeof sdk !== 'undefined' && typeof sdk.showBanner !== 'undefined') {
+       sdk.showBanner();
+    }
+
+    document.getElementById('hubView').style.display = "none";
+    document.getElementById('hud').style.display = "block";
+    document.getElementById('hint').style.display = "block";
+    if (window.innerWidth <= 900) document.getElementById('touch').style.display = "flex";
+    inGame = true;
+
+    if (!window.parkourInitialized) {
+      initParkourEngine();
+      window.parkourInitialized = true;
+    } else {
+      if (window.parkourSceneContainer) window.parkourSceneContainer.style.display = "block";
+    }
+  }
+
+  function initParkourEngine() {
+    const R = new THREE.WebGLRenderer({ antialias: true });
+    R.setPixelRatio(Math.min(devicePixelRatio, 2));
+    R.domElement.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1;';
+    document.body.insertBefore(R.domElement, document.body.firstChild);
+    window.parkourSceneContainer = R.domElement;
+
+    const S = new THREE.Scene(), C = new THREE.PerspectiveCamera(60, 1, .1, 400);
+    S.background = new THREE.Color(0x9cc7e8); S.fog = new THREE.Fog(0x9cc7e8, 45, 150);
+    S.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, .95));
+    const sun = new THREE.DirectionalLight(0xffffff, .65); sun.position.set(5, 12, 8); S.add(sun);
+
+    function onResize() { R.setSize(innerWidth, innerHeight); C.aspect = innerWidth / innerHeight; C.updateProjectionMatrix(); }
+    addEventListener('resize', onResize); onResize();
+
+    // Funzione costruttore Avatar Noob[cite: 1, 2]
+    const YEL = 0xf5cd30, BLU = 0x0d69ac, GRN = 0xa4bd47;
+    const lam = c => new THREE.MeshLambertMaterial({ color: c });
+    function part(w, h, d, c, y) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), lam(c)); m.position.y = y; return m; }
+    function limb(x, y, c) { const g = new THREE.Group(); g.position.set(x, y, 0); g.add(part(.5, 1, .5, c, -.5)); return g; }
+
+    function creaAvatarNoob(nomeTag = "") {
+      const av = new THREE.Group();
+      av.add(part(1, 1, .5, BLU, 1.5));
+      const fc = document.createElement('canvas'); fc.width = fc.height = 64;
+      const fg = fc.getContext('2d'); fg.fillStyle = '#f5cd30'; fg.fillRect(0, 0, 64, 64);
+      fg.fillStyle = '#16212b'; fg.fillRect(18, 20, 6, 10); fg.fillRect(40, 20, 6, 10);
+      fg.lineWidth = 4; fg.lineCap = 'round'; fg.strokeStyle = '#16212b'; fg.beginPath(); fg.arc(32, 34, 13, .25, Math.PI - .25); fg.stroke();
+      const hm = [0, 1, 2, 3, 4, 5].map(i => i === 4 ? new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(fc) }) : lam(YEL));
+      const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), hm); head.position.y = 2.5; av.add(head);
+      const aL = limb(-.75, 2, YEL), aR = limb(.75, 2, YEL), lL = limb(-.25, 1, GRN), lR = limb(.25, 1, GRN);
+      av.add(aL, aR, lL, lR);
+      av.aL = aL; av.aR = aR; av.lL = lL; av.lR = lR;
+      return av;
+    }
+
+    const localAvatar = creaAvatarNoob();
+    S.add(localAvatar);
+
+    // Mappa Parkour[cite: 2]
+    const plats = []; let G = { n: 0, x: 0, y: 0, z: 0, dp: 0, w: 0 };
+    function label(t) {
+      const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d');
+      g.font = 'bold 44px Trebuchet MS'; g.textAlign = 'center'; g.lineWidth = 8; g.strokeStyle = '#16212b'; g.fillStyle = '#fff';
+      g.strokeText(t, 128, 46); g.fillText(t, 128, 46);
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthWrite: false })); s.scale.set(8, 2, 1); return s;
+    }
+    function addPlat() {
+      const n = G.n++, L = Math.floor(n / 11) + 1, cp = n % 11 === 0, D = (L - 1) + (n % 11) / 11;
+      const w = cp ? 10 : Math.max(1.7, 6 - D * .25 - Math.random() * 1.2);
+      const dp = cp ? 10 : Math.max(1.7, 5.4 - D * .22 - Math.random());
+      let y = n ? G.y + (Math.random() * 2 - 1) * (Math.random() < .5 ? .5 : 1.1) : 0; y = Math.max(0, Math.min(9, y));
+      const col = new THREE.Color().setHSL((L * .137) % 1, cp ? .8 : .6, cp ? .72 : .46 + Math.random() * .1);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, .7, dp), new THREE.MeshLambertMaterial({ color: col }));
+      const gap = n ? Math.min(Math.min(1.6 + D * .28, 4.8) + Math.random(), 5) : 0;
+      const z = n ? G.z - G.dp / 2 - gap - dp / 2 : 0;
+      let x = n ? Math.max(-12, Math.min(12, G.x + (Math.random() * 2 - 1) * 3)) : 0;
+      m.position.set(x, y - .35, z);
+      if (cp) { const s = label('LIVELLO ' + L); s.position.set(0, 4, 0); m.add(s); }
+      S.add(m);
+      plats.push({ m, x, y, z, w, dp, cp, n });
+      G.x = x; G.y = y; G.z = z; G.dp = dp; G.w = w;
+    }
+    for (let i = 0; i < 20; i++) addPlat();
+
+    const p = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, ground: false, lastY: 0 };
+    let cpPlat = plats[0], best = 0, falls = 0, t = 0, ph = 0, jb = 0, coy = 0, snap = true, last = performance.now();
+    const SP = 10, GR = 40, JV = 17;
+    const tint = new THREE.Color(0x9cc7e8);
+
+    function level(L) {
+      document.getElementById('L').textContent = L;
+      const h = (L * .137) % 1; tint.setHSL(h, .5, .78);
+      document.documentElement.style.setProperty('--lv', 'hsl(' + Math.round(h * 360) + ',65%,42%)');
+    }
+    function banner(txt) {
+      const b = document.getElementById('banner'); b.textContent = txt; b.classList.add('show');
+      setTimeout(() => b.classList.remove('show'), 1700);
+    }
+    level(1);
+
+    // Controlli tastiera e touch
+    const K = {};
+    addEventListener('keydown', e => { if (e.code === 'Space' || e.code.indexOf('Arrow') === 0) e.preventDefault(); if (!e.repeat) { K[e.code] = true; if (e.code === 'Space') jb = .12; } });
+    addEventListener('keyup', e => { K[e.code] = false; });
+    document.querySelectorAll('#touch button').forEach(b => {
+      const k = b.dataset.k;
+      b.addEventListener('pointerdown', e => { e.preventDefault(); K[k] = true; if (k === 'Space') jb = .12; });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => K[k] = false));
+    });
+
+    function respawn() { p.x = cpPlat.x; p.y = cpPlat.y; p.z = cpPlat.z; p.vx = p.vy = p.vz = 0; p.lastY = cpPlat.y; falls++; document.getElementById('f').textContent = falls; snap = true; }
+
+    // GESTIONE MULTIPLAYER FIREBASE
+    const remoteAvatars = {};
+    const myPlayerRef = currentUser ? dbRef.ref('online_players/' + sanitizeKey(currentUser)) : null;
+    if (myPlayerRef) myPlayerRef.onDisconnect().remove();
+
+    dbRef.ref('online_players').on('value', snap => {
+      const players = snap.val() || {};
+      Object.keys(players).forEach(nameKey => {
+        if (currentUser && nameKey === sanitizeKey(currentUser)) return;
+        const pData = players[nameKey];
+        if (!remoteAvatars[nameKey]) {
+          const remoteAv = creaAvatarNoob();
+          S.add(remoteAv);
+          remoteAvatars[nameKey] = remoteAv;
+        }
+        const rav = remoteAvatars[nameKey];
+        rav.position.set(pData.x, pData.y, pData.z);
+        rav.rotation.y = pData.ry || 0;
+        // Animazione remota
+        if (pData.anim === 'walk') {
+          rav.aL.rotation.x = pData.animVal; rav.aR.rotation.x = -pData.animVal;
+          rav.lL.rotation.x = -pData.animVal; rav.lR.rotation.x = pData.animVal;
+        } else if (pData.anim === 'jump') {
+          rav.aL.rotation.x = -2.6; rav.aR.rotation.x = -2.6; rav.lL.rotation.x = .4; rav.lR.rotation.x = -.4;
+        } else {
+          rav.aL.rotation.x = rav.aR.rotation.x = rav.lL.rotation.x = rav.lR.rotation.x = 0;
+        }
+      });
+      // Rimuovi utenti disconnessi
+      Object.keys(remoteAvatars).forEach(nameKey => {
+        if (!players[nameKey]) {
+          S.remove(remoteAvatars[nameKey]);
+          delete remoteAvatars[nameKey];
+        }
+      });
+    });
+
+    // LOOP PRINCIPALE DEL GIOCO
+    function frame(now) {
+      requestAnimationFrame(frame);
+      if (!inGame) return;
+
+      const dt = Math.min((now - last) / 1000, .05); last = now; t += dt;
+
+      const ix = (K.KeyD || K.ArrowRight ? 1 : 0) - (K.KeyA || K.ArrowLeft ? 1 : 0);
+      const iz = (K.KeyS || K.ArrowDown ? 1 : 0) - (K.KeyW || K.ArrowUp ? 1 : 0);
+      const len = Math.hypot(ix, iz) || 1; p.vx = ix / len * SP; p.vz = iz / len * SP;
+
+      jb -= dt; coy = p.ground ? .1 : coy - dt;
+      if (jb > 0 && coy > 0) { p.vy = JV; jb = 0; coy = 0; p.ground = false; }
+
+      const oy = p.y; p.vy -= GR * dt; p.y += p.vy * dt; p.x += p.vx * dt; p.z += p.vz * dt;
+      p.ground = false;
+
+      for (const q of plats) {
+        if (p.vy <= 0 && oy >= q.y - .15 && p.y <= q.y && Math.abs(q.z - p.z) < q.dp / 2 + .35 && Math.abs(q.x - p.x) < q.w / 2 + .35) {
+          p.y = q.y; p.vy = 0; p.ground = true; p.lastY = q.y;
+          if (q.n > best) {
+            best = q.n; const L = Math.floor(q.n / 11) + 1, k = q.n % 11;
+            document.getElementById('p').textContent = k; document.getElementById('fill').style.width = (k * 10) + '%';
+            if (q.cp) { cpPlat = q; level(L); if (q.n > 0) banner('Livello ' + L); }
+          }
+          break;
+        }
+      }
+
+      if (p.y < p.lastY - 16) respawn();
+      while (G.z > p.z - 150) addPlat();
+
+      // Animazione Avatar Locale[cite: 1]
+      localAvatar.position.set(p.x, p.y, p.z);
+      const mov = Math.hypot(p.vx, p.vz) > .1;
+      let currentAnim = 'idle';
+      let animVal = 0;
+      if (mov) {
+        const ta = Math.atan2(p.vx, p.vz); let da = ta - localAvatar.rotation.y;
+        da = Math.atan2(Math.sin(da), Math.cos(da)); localAvatar.rotation.y += da * Math.min(1, dt * 12);
+      }
+      if (!p.ground) {
+        localAvatar.aL.rotation.x = localAvatar.aR.rotation.x = -2.6; localAvatar.lL.rotation.x = .4; localAvatar.lR.rotation.x = -.4;
+        currentAnim = 'jump';
+      } else if (mov) {
+        ph += dt * 12; animVal = Math.sin(ph) * .8;
+        localAvatar.aL.rotation.x = animVal; localAvatar.aR.rotation.x = -animVal; localAvatar.lL.rotation.x = -animVal; localAvatar.lR.rotation.x = animVal;
+        currentAnim = 'walk';
+      } else {
+        localAvatar.aL.rotation.x = localAvatar.aR.rotation.x = localAvatar.lL.rotation.x = localAvatar.lR.rotation.x = 0;
+      }
+
+      // Sincronizzazione Firebase Multiplayer
+      if (myPlayerRef) {
+        myPlayerRef.set({ x: p.x, y: p.y, z: p.z, ry: localAvatar.rotation.y, anim: currentAnim, animVal: animVal });
+      }
+
+      // Camera
+      const tp = new THREE.Vector3(p.x * .7, p.lastY + 6.5, p.z + 12);
+      if (snap) { C.position.copy(tp); snap = false; } else { C.position.lerp(tp, 1 - Math.exp(-5 * dt)); }
+      C.lookAt(p.x * .85, p.lastY + 2.2, p.z - 7);
+      S.background.lerp(tint, .02); S.fog.color.copy(S.background);
+      R.render(S, C);
+    }
+    requestAnimationFrame(frame);
   }
 </script>
-
 </body>
 </html>
