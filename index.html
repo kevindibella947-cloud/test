@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Blox Platform - Online & Global</title>
   
   <!-- Firebase SDK (v9 Compat) -->
@@ -57,6 +57,35 @@
     .game-body { padding: 15px; }
     .btn-play { width: 100%; padding: 10px; background: #22c55e; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
+    /* VISTA SCHERMATA GIOCO CLICKER */
+    .game-view { display: none; }
+    .card-game { background: #16161e; border: 1px solid #272736; padding: 30px; border-radius: 16px; width: 100%; max-width: 520px; margin: 0 auto; text-align: center; }
+    .user-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #272736; }
+    .user-name { font-weight: bold; color: #3b82f6; font-size: 1.1rem; }
+    .btn-back { background: none; border: 1px solid #3b82f6; color: #3b82f6; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+
+    .notice-box { background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; padding: 12px; border-radius: 8px; font-size: 13px; color: #93c5fd; margin-bottom: 20px; text-align: center; line-height: 1.4; }
+    .notice-box strong { color: #3b82f6; }
+
+    .counter-container { font-size: 2.2rem; font-weight: bold; margin-bottom: 10px; color: #ffffff; }
+    .progress-info { font-size: 14px; color: #eab308; margin-bottom: 20px; font-weight: bold; }
+
+    .btn-wrapper { position: relative; margin-bottom: 20px; }
+    .click-btn { padding: 25px 50px; font-size: 1.8rem; font-weight: bold; color: white; background: linear-gradient(145deg, #007bff, #0056b3); border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4); outline: none; user-select: none; }
+    .click-btn:active { transform: scale(0.92); }
+
+    .floating-text { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; font-weight: bold; color: #22c55e; pointer-events: none; animation: floatUp 0.7s ease-out forwards; }
+    @keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -60px); } }
+
+    .claim-btn { width: 100%; padding: 12px 20px; background: linear-gradient(135deg, #3b82f6, #9333ea); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 10px; display: none; }
+    .save-btn { width: 100%; padding: 12px 20px; background-color: #22c55e; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 25px; }
+
+    .leaderboard-container { width: 100%; border-top: 1px solid #272736; padding-top: 20px; text-align: left; }
+    .leaderboard-container h2 { font-size: 1.2rem; margin-bottom: 15px; text-align: center; color: #a855f7; }
+    .leaderboard-list { list-style: none; padding: 0; margin: 0; }
+    .leaderboard-item { display: flex; justify-content: space-between; padding: 10px 15px; background: #0b0b0e; border: 1px solid #272736; border-radius: 8px; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+    .empty-msg { text-align: center; color: #888; font-style: italic; }
+
     /* HUD GIOCO PARKOUR */
     #hud{position:fixed;left:max(12px,env(safe-area-inset-left));top:calc(env(safe-area-inset-top,0px) + 80px);background:var(--card);padding:10px 14px 12px;border-radius:10px;min-width:160px;box-shadow:0 3px 0 rgba(0,0,0,.2);z-index:20;display:none;color:var(--ink)}
     #lvl{font-size:15px}
@@ -83,8 +112,9 @@
     #noobUiControls button { border: 0; border-radius: 10px; padding: 8px 14px; background: var(--card); color: var(--ink); font: inherit; font-size: 13px; box-shadow: 0 3px 0 rgba(0,0,0,.2); cursor: pointer; }
     #noobUiControls button[aria-pressed="true"] { background: var(--ac); color: #fff; }
 
-    /* CONTENITORE AVATAR 3D NELL'HUB */
+    /* CONTENITORI AVATAR 3D */
     .avatar-3d-box { width: 100px; height: 100px; background: rgba(0,0,0,0.3); border-radius: 50%; overflow: hidden; border: 2px solid #a855f7; }
+    .avatar-3d-game { width: 150px; height: 150px; margin: 0 auto 15px auto; background: rgba(0,0,0,0.3); border-radius: 12px; border: 2px solid #3b82f6; overflow: hidden; }
 
     /* MODALI */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 100; align-items: center; justify-content: center; padding: 15px; }
@@ -105,7 +135,7 @@
 <body>
 
   <header>
-    <div class="logo" onclick="tornaAllHub()">🎮 BLOX PLATFORM</div>
+    <div class="logo" onclick="apriHub()">🎮 BLOX PLATFORM</div>
     <div class="stats-bar" id="statsHeader" style="display: none;">
       <div class="stat-card coins">🪙 <span id="coinDisplay">0</span></div>
       <div class="stat-card platabux">💎 <span id="platabuxDisplay">0</span></div>
@@ -154,12 +184,13 @@
 
       <h2 style="margin-bottom: 15px; font-size: 20px;">🕹️ Esperienze Disponibili</h2>
       <div class="games-grid">
+        <!-- ESPERIENZA 1: PARKOUR MULTIPLAYER -->
         <div class="game-card">
           <div>
             <div class="game-thumb">🏃‍♂️💨</div>
             <div class="game-body">
               <h3 style="font-size: 18px; margin-bottom: 5px;">Infinite Parkour 3D</h3>
-              <p style="font-size: 12px; color: #9aa4b8;">Salta sulle piattaforme infinite, scala i livelli e gioca in multiplayer con il personaggio Noob[cite: 1, 2]!</p>
+              <p style="font-size: 12px; color: #9aa4b8;">Salta sulle piattaforme infinite, scala i livelli e gioca in multiplayer con il noob[cite: 1, 2]!</p>
             </div>
           </div>
           <div style="padding: 15px; padding-top: 0;">
@@ -167,6 +198,21 @@
           </div>
         </div>
 
+        <!-- ESPERIENZA 2: CLICKER -->
+        <div class="game-card">
+          <div>
+            <div class="game-thumb">🖱️💎</div>
+            <div class="game-body">
+              <h3 style="font-size: 18px; margin-bottom: 5px;">Platabux Clicker</h3>
+              <p style="font-size: 12px; color: #9aa4b8;">Fai 10.000 punti per vincere 500 Platabux e scala la classifica globale!</p>
+            </div>
+          </div>
+          <div style="padding: 15px; padding-top: 0;">
+            <button class="btn-play" onclick="avviaClickerGame()">GIOCA ORA</button>
+          </div>
+        </div>
+
+        <!-- ESPERIENZA 3: ARENA 3D -->
         <div class="game-card">
           <div>
             <div class="game-thumb">⚔️</div>
@@ -176,8 +222,49 @@
             </div>
           </div>
           <div style="padding: 15px; padding-top: 0;">
-            <button class="btn-play" onclick="alert('In arrivo prossimamente!')">GIOCA ORA</button>
+            <button class="btn-play" onclick="alert('Blocky Arena 3D in arrivo prossimamente!')">GIOCA ORA</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHERMATA DEL GIOCO CLICKER -->
+    <div class="game-view" id="gameView">
+      <div class="card-game">
+        <div class="user-bar">
+          <span>Giocatore: <span class="user-name" id="currentUsername"></span></span>
+          <button class="btn-back" onclick="apriHub()">⬅️ Torna al Hub</button>
+        </div>
+
+        <!-- AVATAR 3D DENTRO IL GIOCO CLICKER -->
+        <div class="avatar-3d-game" id="avatarGameContainer"></div>
+
+        <div class="notice-box">
+          📢 <strong>REGOLA PLATABUX:</strong><br>
+          Ogni <strong>10.000 Punti</strong> effettuati riceverai in premio <strong>+500 Platabux 💎</strong>!<br>
+          Il traguardo si ripete all'infinito (10k, 20k, 30k...).
+        </div>
+
+        <div class="counter-container">
+          Punteggio Sessione: <span id="clickScore">0</span>
+        </div>
+
+        <div class="progress-info" id="progressInfo">
+          Prossimo premio tra: 10.000 click
+        </div>
+
+        <div class="btn-wrapper" id="btnWrapper">
+          <button class="click-btn" id="clickBtn" onclick="faiClick()">Cliccami!</button>
+        </div>
+
+        <button class="claim-btn" id="claimBtn" onclick="riscattaPlatabux()">🎁 RISCATTA +500 PLATABUX! 🎁</button>
+        <button class="save-btn" onclick="salvaPunteggio()">💾 Salva Punteggio in Classifica</button>
+
+        <div class="leaderboard-container">
+          <h2>🏆 Classifica Globale TOP 5</h2>
+          <ul class="leaderboard-list" id="leaderboardList">
+            <li class="empty-msg">Caricamento classifica globale...</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -254,6 +341,12 @@
   let isLoginMode = true;
   let currentUser = localStorage.getItem('bloxi_session');
   let pendingUserLogin = null;
+  
+  let clickerScore = 0;
+  let unrewardedClicks = 0;
+  const TARGET_CLICKS = 10000;
+  const REWARD_PLATABUX = 500;
+
   let parkourActive = false;
   let parkourRenderer = null;
   let parkourAnimFrame = null;
@@ -273,7 +366,7 @@
     return num.toString();
   }
 
-  // --- RENDERING AVATAR 3D NELL'HUB ---
+  // --- RENDERING AVATAR 3D NELL'HUB E NEL CLICKER ---
   function caricaAvatar3D(containerId, fbxPath = 'avatar.fbx') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -332,7 +425,32 @@
   }
   initAdminAccounts();
 
-  // NAVIGAZIONE HUB / GIOCO
+  /* CLASSIFICA CLICKER IN TEMPO REALE */
+  dbRef.ref('leaderboard').on('value', (snapshot) => {
+    const data = snapshot.val() || {};
+    const leaderboardList = document.getElementById('leaderboardList');
+    if (!leaderboardList) return;
+    leaderboardList.innerHTML = '';
+
+    let arr = Object.values(data);
+    if (arr.length === 0) {
+      leaderboardList.innerHTML = '<li class="empty-msg">Nessun punteggio registrato</li>';
+      return;
+    }
+
+    arr.sort((a, b) => b.score - a.score);
+    const top5 = arr.slice(0, 5);
+
+    top5.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.classList.add('leaderboard-item');
+      const isCurrent = currentUser && item.name.toLowerCase() === currentUser.toLowerCase() ? ' (Tu)' : '';
+      li.innerHTML = `<span>#${index + 1} ${escapeHtml(item.name)}${isCurrent}</span> <span>${item.score} pt</span>`;
+      leaderboardList.appendChild(li);
+    });
+  });
+
+  // NAVIGAZIONE HUB / GIOCHI
   function apriHub() {
     parkourActive = false;
     if (parkourAnimFrame) cancelAnimationFrame(parkourAnimFrame);
@@ -345,18 +463,95 @@
 
     document.getElementById('authView').style.display = "none";
     document.getElementById('hubView').style.display = "block";
+    document.getElementById('gameView').style.display = "none";
     caricaInterfaccia();
     setTimeout(() => caricaAvatar3D('avatarHubContainer'), 100);
   }
 
-  function tornaAllHub() {
-    apriHub();
+  function avviaClickerGame() {
+    document.getElementById('authView').style.display = "none";
+    document.getElementById('hubView').style.display = "none";
+    document.getElementById('gameView').style.display = "block";
+
+    document.getElementById('currentUsername').textContent = currentUser;
+    clickerScore = 0;
+    unrewardedClicks = 0;
+    aggiornaInterfacciaClicker();
+    setTimeout(() => caricaAvatar3D('avatarGameContainer'), 100);
+  }
+
+  /* LOGICA GIOCO CLICKER */
+  function faiClick() {
+    clickerScore++;
+    unrewardedClicks++;
+    aggiornaInterfacciaClicker();
+    
+    const floatEl = document.createElement('div');
+    floatEl.classList.add('floating-text');
+    floatEl.textContent = '+1';
+    const wrapper = document.getElementById('btnWrapper');
+    wrapper.appendChild(floatEl);
+    floatEl.addEventListener('animationend', () => { floatEl.remove(); });
+
+    if (unrewardedClicks >= TARGET_CLICKS) {
+      document.getElementById('claimBtn').style.display = "block";
+    }
+  }
+
+  function aggiornaInterfacciaClicker() {
+    document.getElementById('clickScore').textContent = formattaNumero(clickerScore);
+    const rimasti = TARGET_CLICKS - unrewardedClicks;
+    
+    if (rimasti > 0) {
+      document.getElementById('progressInfo').textContent = `Prossimo premio (+${REWARD_PLATABUX} Platabux): mancano ${formattaNumero(rimasti)} click`;
+      document.getElementById('claimBtn').style.display = "none";
+    } else {
+      document.getElementById('progressInfo').textContent = `🎉 HAI RAGGIUNTO 10.000 PUNTI! Riscatta il tuo premio!`;
+      document.getElementById('claimBtn').style.display = "block";
+    }
+  }
+
+  function riscattaPlatabux() {
+    if (unrewardedClicks < TARGET_CLICKS) return;
+    const userKey = sanitizeKey(currentUser);
+
+    dbRef.ref('users/' + userKey).transaction((userData) => {
+      if (userData) userData.platabux = (userData.platabux || 0) + REWARD_PLATABUX;
+      return userData;
+    }, (error, committed) => {
+      if (committed) {
+        alert(`🎉 Complimenti! Hai raggiunto 10.000 punti e hai guadagnato +${REWARD_PLATABUX} Platabux 💎!`);
+        unrewardedClicks -= TARGET_CLICKS;
+        aggiornaInterfacciaClicker();
+        caricaInterfaccia();
+      }
+    });
+  }
+
+  function salvaPunteggio() {
+    if (clickerScore === 0) return alert('Fai almeno un click prima di salvare!');
+    const userKey = sanitizeKey(currentUser);
+
+    dbRef.ref('leaderboard/' + userKey).once('value', (snap) => {
+      const existing = snap.val();
+      if (!existing || clickerScore > existing.score) {
+        dbRef.ref('leaderboard/' + userKey).set({ name: currentUser, score: clickerScore });
+        alert(`Nuovo record globale salvato: ${clickerScore} punti!`);
+      } else {
+        alert(`Punteggio aggiornato!\n(Il tuo record massimo in classifica rimane ${existing.score} punti)`);
+      }
+    });
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
 
   // --- MOTORE DEL PARKOUR INFINITO 3D + NOOB + MULTIPLAYER ---
   function avviaParkourGame() {
     parkourActive = true;
     document.getElementById('hubView').style.display = "none";
+    document.getElementById('gameView').style.display = "none";
     document.getElementById('hud').style.display = "block";
     document.getElementById('hint').style.display = "block";
     document.getElementById('noobUiControls').style.display = 'flex';
@@ -384,7 +579,7 @@
     window.addEventListener('resize', resizeParkour);
     resizeParkour();
 
-    // Creazione Avatar Noob (ispirato al codice personaggio noob)[cite: 1, 2]
+    // Creazione Avatar Noob[cite: 1, 2]
     const YEL = 0xf5cd30, BLU = 0x0d69ac, GRN = 0xa4bd47;
     const lam = c => new THREE.MeshLambertMaterial({ color: c });
     function part(w, h, d, c, y) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), lam(c)); m.position.y = y; return m; }
@@ -394,107 +589,4 @@
       const av = new THREE.Group();
       av.add(part(1, 1, .5, BLU, 1.5));
       const fc = document.createElement('canvas'); fc.width = fc.height = 64;
-      const fg = fc.getContext('2d'); fg.fillStyle = '#f5cd30'; fg.fillRect(0, 0, 64, 64);
-      fg.fillStyle = '#16212b'; fg.fillRect(18, 20, 6, 10); fg.fillRect(40, 20, 6, 10);
-      fg.lineWidth = 4; fg.lineCap = 'round'; fg.strokeStyle = '#16212b'; fg.beginPath(); fg.arc(32, 34, 13, .25, Math.PI - .25); fg.stroke();
-      const hm = [0, 1, 2, 3, 4, 5].map(i => i === 4 ? new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(fc) }) : lam(YEL));
-      const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), hm); head.position.y = 2.5; av.add(head);
-      const aL = limb(-.75, 2, YEL), aR = limb(.75, 2, YEL), lL = limb(-.25, 1, GRN), lR = limb(.25, 1, GRN);
-      av.add(aL, aR, lL, lR);
-      av.aL = aL; av.aR = aR; av.lL = lL; av.lR = lR;
-      return av;
-    }
-
-    const localAvatar = creaAvatarNoob();
-    S.add(localAvatar);
-
-    // Pulsanti UI animazioni Noob[cite: 1]
-    document.querySelectorAll('#noobUiControls button').forEach(b => {
-      b.onclick = () => {
-        currentNoobMode = b.dataset.m;
-        document.querySelectorAll('#noobUiControls button').forEach(o => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
-      };
-    });
-
-    // Mappa Piattaforme Infinite[cite: 2]
-    const plats = []; let G = { n: 0, x: 0, y: 0, z: 0, dp: 0, w: 0 };
-    function label(t) {
-      const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d');
-      g.font = 'bold 44px Trebuchet MS'; g.textAlign = 'center'; g.lineWidth = 8; g.strokeStyle = '#16212b'; g.fillStyle = '#fff';
-      g.strokeText(t, 128, 46); g.fillText(t, 128, 46);
-      return new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthWrite: false }));
-    }
-    function addPlat() {
-      const n = G.n++, L = Math.floor(n / 11) + 1, cp = n % 11 === 0, D = (L - 1) + (n % 11) / 11;
-      const w = cp ? 10 : Math.max(1.7, 6 - D * .25 - Math.random() * 1.2);
-      const dp = cp ? 10 : Math.max(1.7, 5.4 - D * .22 - Math.random());
-      let y = n ? G.y + (Math.random() * 2 - 1) * (Math.random() < .5 ? .5 : 1.1) : 0; y = Math.max(0, Math.min(9, y));
-      const col = new THREE.Color().setHSL((L * .137) % 1, cp ? .8 : .6, cp ? .72 : .46 + Math.random() * .1);
-      const m = new THREE.Mesh(new THREE.BoxGeometry(w, .7, dp), new THREE.MeshLambertMaterial({ color: col }));
-      const gap = n ? Math.min(Math.min(1.6 + D * .28, 4.8) + Math.random(), 5) : 0;
-      const z = n ? G.z - G.dp / 2 - gap - dp / 2 : 0;
-      let x = n ? Math.max(-12, Math.min(12, G.x + (Math.random() * 2 - 1) * 3)) : 0;
-      m.position.set(x, y - .35, z);
-      if (cp) { const s = label('LIVELLO ' + L); s.position.set(0, 4, 0); m.add(s); }
-      S.add(m);
-      plats.push({ m, x, y, z, w, dp, cp, n });
-      G.x = x; G.y = y; G.z = z; G.dp = dp; G.w = w;
-    }
-    for (let i = 0; i < 20; i++) addPlat();
-
-    const p = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, ground: false, lastY: 0 };
-    let cpPlat = plats[0], best = 0, falls = 0, t = 0, ph = 0, jb = 0, coy = 0, snap = true, last = performance.now();
-    const SP = 10, GR = 40, JV = 17;
-    const tint = new THREE.Color(0x9cc7e8);
-
-    function level(L) {
-      document.getElementById('L').textContent = L;
-      const h = (L * .137) % 1; tint.setHSL(h, .5, .78);
-      document.documentElement.style.setProperty('--lv', 'hsl(' + Math.round(h * 360) + ',65%,42%)');
-    }
-    let bt; function banner(txt) {
-      const b = document.getElementById('banner'); b.textContent = txt; b.classList.add('show');
-      clearTimeout(bt); bt = setTimeout(() => b.classList.remove('show'), 1700);
-    }
-    level(1);
-
-    // Controlli tastiera e touch
-    const K = {};
-    const press = k => { K[k] = true; if (k === 'Space') { jb = .12; document.getElementById('hint').classList.add('off'); } };
-    const rel = k => { K[k] = false; };
-    
-    const onKeyDown = e => { if (e.code === 'Space' || e.code.indexOf('Arrow') === 0) e.preventDefault(); if (!e.repeat) press(e.code); };
-    const onKeyUp = e => rel(e.code);
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-
-    document.querySelectorAll('#touch button').forEach(b => {
-      const k = b.dataset.k;
-      b.addEventListener('pointerdown', e => { e.preventDefault(); press(k); });
-      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => rel(k)));
-    });
-
-    function respawn() { p.x = cpPlat.x; p.y = cpPlat.y; p.z = cpPlat.z; p.vx = p.vy = p.vz = 0; p.lastY = cpPlat.y; falls++; document.getElementById('f').textContent = falls; snap = true; }
-
-    // Sincronizzazione Multiplayer Firebase
-    const remoteAvatars = {};
-    const myPlayerRef = currentUser ? dbRef.ref('online_players/' + sanitizeKey(currentUser)) : null;
-    if (myPlayerRef) myPlayerRef.onDisconnect().remove();
-
-    dbRef.ref('online_players').on('value', snap => {
-      if (!parkourActive) return;
-      const players = snap.val() || {};
-      Object.keys(players).forEach(nameKey => {
-        if (currentUser && nameKey === sanitizeKey(currentUser)) return;
-        const pData = players[nameKey];
-        if (!remoteAvatars[nameKey]) {
-          const remoteAv = creaAvatarNoob();
-          S.add(remoteAv);
-          remoteAvatars[nameKey] = remoteAv;
-        }
-        const rav = remoteAvatars[nameKey];
-        rav.position.set(pData.x, pData.y, pData.z);
-        rav.rotation.y = pData.ry || 0;
-        if (pData.anim === 'walk') {
-          rav.aL.rotation.x = pData.animVal; rav.aR.rotation.x = -pData.animVal;
-          rav.lL.rotation.x = -pData.animVal; rav.lR.rotation.x = pData.animVal
+      const fg = fc.getContext('2d'); fg.fillStyle = '#f
