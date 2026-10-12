@@ -420,8 +420,21 @@
 
   // INIZIALIZZAZIONE ADMIN SUL CLOUD
   function initAdminAccounts() {
-    dbRef.ref('users/' + sanitizeKey(OWNER_NAME)).update({ username: OWNER_NAME, password: OWNER_PASS, role: "owner", captcha: OWNER_CAPTCHA });
-    dbRef.ref('users/' + sanitizeKey(ADMIN_COUSIN)).update({ username: ADMIN_COUSIN, password: ADMIN_COUSIN_PASS, role: "admin", captcha: ADMIN_COUSIN_CAPTCHA });
+    const ownerKey = sanitizeKey(OWNER_NAME);
+    const adminKey = sanitizeKey(ADMIN_COUSIN);
+
+    dbRef.ref('users/' + ownerKey).update({ 
+      username: OWNER_NAME, 
+      password: OWNER_PASS, 
+      role: "owner", 
+      captcha: OWNER_CAPTCHA 
+    });
+    dbRef.ref('users/' + adminKey).update({ 
+      username: ADMIN_COUSIN, 
+      password: ADMIN_COUSIN_PASS, 
+      role: "admin", 
+      captcha: ADMIN_COUSIN_CAPTCHA 
+    });
   }
   initAdminAccounts();
 
@@ -799,6 +812,8 @@
       const userData = snap.val();
       if (isLoginMode) {
         if (!userData || userData.password !== pass) return mostraMessaggio("Credenziali errate!", "error");
+        
+        // Controllo se è admin o owner
         if (userData.role === "owner" || userData.role === "admin") {
           pendingUserLogin = user;
           document.getElementById('popupCaptchaInput').value = "";
@@ -809,7 +824,14 @@
         completaLogin(user);
       } else {
         if (userData) return mostraMessaggio("Nickname già occupato!", "error");
-        dbRef.ref('users/' + userKey).set({ username: user, password: pass, coins: 100, platabux: 0, role: "user" }, (err) => {
+        dbRef.ref('users/' + userKey).set({ 
+          username: user, 
+          password: pass, 
+          coins: 100, 
+          platabux: 0, 
+          role: "user",
+          captcha: Math.floor(1000 + Math.random() * 9000).toString()
+        }, (err) => {
           if (!err) completaLogin(user);
         });
       }
@@ -819,9 +841,11 @@
   function confermaCaptchaPopup() {
     if (!pendingUserLogin) return;
     const userKey = sanitizeKey(pendingUserLogin);
+
     dbRef.ref('users/' + userKey).once('value', (snap) => {
       const userData = snap.val();
       const inputCaptcha = document.getElementById('popupCaptchaInput').value.trim();
+
       if (userData && inputCaptcha === userData.captcha) {
         document.getElementById('captchaModal').style.display = "none";
         completaLogin(pendingUserLogin);
