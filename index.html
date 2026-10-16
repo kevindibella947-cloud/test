@@ -29,6 +29,8 @@
     .user-info { display: flex; align-items: center; gap: 10px; }
     .admin-badge { background: linear-gradient(135deg, #9333ea, #3b82f6); color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
     .btn-admin { background: #9333ea; border: none; color: white; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .btn-support { background: #3b82f6; border: none; color: white; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .btn-friends { background: #10b981; border: none; color: white; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
     .btn-logout { background: #ef4444; border: none; color: white; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
 
     /* CONTENITORE PRINCIPALE */
@@ -38,8 +40,8 @@
     p.subtitle { font-size: 13px; color: #9aa4b8; margin-bottom: 20px; }
     .input-group { text-align: left; margin-bottom: 14px; }
     label { display: block; font-size: 11px; color: #a855f7; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-    input { width: 100%; padding: 12px; background: #0b0b0e; border: 1px solid #272736; border-radius: 6px; color: white; font-size: 14px; outline: none; }
-    input:focus { border-color: #a855f7; }
+    input, textarea { width: 100%; padding: 12px; background: #0b0b0e; border: 1px solid #272736; border-radius: 6px; color: white; font-size: 14px; outline: none; font-family: inherit; }
+    input:focus, textarea:focus { border-color: #a855f7; }
 
     .btn-main { width: 100%; padding: 12px; background: linear-gradient(135deg, #9333ea, #3b82f6); border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; }
     .switch-mode { margin-top: 15px; font-size: 13px; color: #9aa4b8; }
@@ -56,6 +58,7 @@
     .game-thumb { width: 100%; height: 160px; background: #272736; display: flex; align-items: center; justify-content: center; font-size: 48px; }
     .game-body { padding: 15px; }
     .btn-play { width: 100%; padding: 10px; background: #22c55e; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .btn-details { width: 100%; padding: 8px; background: #3b82f6; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-top: 6px; font-size: 12px; }
 
     /* VISTA SCHERMATA GIOCO CLICKER */
     .game-view { display: none; }
@@ -130,6 +133,15 @@
     .btn-give { padding: 6px 10px; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
     .btn-give-coin { background: #eab308; color: black; }
     .btn-give-pbux { background: #3b82f6; color: white; }
+
+    /* SEZIONE SUPPORTO */
+    .support-card { background: #16161e; border: 1px solid #3b82f6; padding: 30px; border-radius: 16px; width: 100%; max-width: 600px; margin: 0 auto; display: none; }
+    .ticket-item { background: #0b0b0e; border: 1px solid #272736; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 13px; }
+
+    /* DETTAGLI GIOCO & AMICI MODAL STYLES */
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #272736; font-size: 14px; }
+    .btn-like { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .friend-item { display: flex; justify-content: space-between; align-items: center; background: #0b0b0e; border: 1px solid #272736; padding: 10px; border-radius: 6px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -141,6 +153,8 @@
       <div class="stat-card platabux">💎 <span id="platabuxDisplay">0</span></div>
     </div>
     <div class="user-info" id="userHeader" style="display: none;">
+      <button class="btn-friends" onclick="apriAmiciModal()">👥 Amici</button>
+      <button class="btn-support" onclick="apriSupporto()">🛠️ Supporto</button>
       <button class="btn-admin" id="adminBtn" onclick="apriSupervisione()">👑 Pannello Admin</button>
       <span id="adminTagDisplay" class="admin-badge" style="display:none;">👑 ADMIN</span>
       <span id="usernameDisplay" style="font-size: 14px; font-weight: bold;">-</span>
@@ -190,11 +204,12 @@
             <div class="game-thumb">🏃‍♂️💨</div>
             <div class="game-body">
               <h3 style="font-size: 18px; margin-bottom: 5px;">Infinite Parkour 3D</h3>
-              <p style="font-size: 12px; color: #9aa4b8;">Salta sulle piattaforme infinite, scala i livelli e gioca in multiplayer con il noob[cite: 1, 2]!</p>
+              <p style="font-size: 12px; color: #9aa4b8;">Salta sulle piattaforme infinite, scala i livelli e gioca in multiplayer con il noob!</p>
             </div>
           </div>
           <div style="padding: 15px; padding-top: 0;">
             <button class="btn-play" onclick="avviaParkourGame()">GIOCA ORA</button>
+            <button class="btn-details" onclick="apriDettagliGioco('parkour3d', 'Infinite Parkour 3D', '12/10/2026')">📊 Dettagli</button>
           </div>
         </div>
 
@@ -209,6 +224,7 @@
           </div>
           <div style="padding: 15px; padding-top: 0;">
             <button class="btn-play" onclick="avviaClickerGame()">GIOCA ORA</button>
+            <button class="btn-details" onclick="apriDettagliGioco('clicker', 'Platabux Clicker', '10/10/2026')">📊 Dettagli</button>
           </div>
         </div>
 
@@ -223,8 +239,33 @@
           </div>
           <div style="padding: 15px; padding-top: 0;">
             <button class="btn-play" onclick="alert('Blocky Arena 3D in arrivo prossimamente!')">GIOCA ORA</button>
+            <button class="btn-details" onclick="apriDettagliGioco('arena3d', 'Blocky Arena 3D', 'Prossimamente')">📊 Dettagli</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- SCHERMATA SUPPORTO / SEGNALAZIONI -->
+    <div class="support-card" id="supportView">
+      <div class="user-bar">
+        <span>🛠️ Centro Supporto e Segnalazioni</span>
+        <button class="btn-back" onclick="apriHub()">⬅️ Torna al Hub</button>
+      </div>
+      <p style="font-size: 13px; color: #9aa4b8; margin-bottom: 15px;">Hai riscontrato un problema o vuoi inviare un messaggio al proprietario? Scrivi qui sotto:</p>
+      
+      <div class="input-group">
+        <label>Oggetto / Tipo Problema</label>
+        <input type="text" id="ticketSubject" placeholder="Es. Bug nel gioco, problema account...">
+      </div>
+      <div class="input-group">
+        <label>Messaggio Dettagliato</label>
+        <textarea id="ticketMessage" rows="4" placeholder="Descrivi il problema riscontrato..."></textarea>
+      </div>
+      <button class="btn-main" onclick="inviaSegnalazioneSupporto()">INVIA SEGNALAZIONE</button>
+
+      <div id="adminTicketSection" style="margin-top: 25px; display: none;">
+        <h3 style="color: #a855f7; font-size: 16px; margin-bottom: 10px;">📥 Segnalazioni Ricevute (Vista Admin)</h3>
+        <div id="ticketListContainer" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
     </div>
 
@@ -295,6 +336,39 @@
     <button id="j" data-k="Space">Salta</button>
   </div>
 
+  <!-- POPUP DETTAGLI GIOCO -->
+  <div class="modal-overlay" id="detailsModal">
+    <div class="modal-captcha" style="max-width: 420px; text-align: left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #272736; padding-bottom:8px;">
+        <h3 id="detGameTitle" style="color:#a855f7;">Dettagli Gioco</h3>
+        <button class="btn-close" onclick="chiudiDettagliModal()">✕</button>
+      </div>
+      <div class="detail-row"><span>🟢 Giocatori Online:</span> <strong id="detOnlineUsers" style="color:#22c55e;">0</strong></div>
+      <div class="detail-row"><span>👁️ Visualizzazioni Totali:</span> <strong id="detTotalVisits">0</strong></div>
+      <div class="detail-row"><span>👍 Like Ricevuti:</span> <strong id="detLikes">0</strong></div>
+      <div class="detail-row"><span>📅 Data Aggiunta/Aggiornamento:</span> <strong id="detAddedDate" style="color:#a855f7;">-</strong></div>
+      <button class="btn-like" onclick="lasciaLikeGioco()">👍 Lascia un Like!</button>
+    </div>
+  </div>
+
+  <!-- POPUP AMICI -->
+  <div class="modal-overlay" id="friendsModal">
+    <div class="modal" style="max-width: 450px;">
+      <div class="modal-header">
+        <h3 style="color:#10b981;">👥 Gestione Amici</h3>
+        <button class="btn-close" onclick="chiudiAmiciModal()">✕</button>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:15px;">
+        <input type="text" id="friendSearchName" placeholder="Nickname amico..." style="flex:1;">
+        <button class="btn-friends" onclick="inviaRichiestaAmicizia()">Aggiungi</button>
+      </div>
+      <h4 style="font-size:14px; color:#a855f7; margin-bottom:8px;">Richieste In Sospeso</h4>
+      <div id="pendingFriendsList" style="margin-bottom:15px; max-height:100px; overflow-y:auto;"></div>
+      <h4 style="font-size:14px; color:#10b981; margin-bottom:8px;">I Tuoi Amici</h4>
+      <div id="acceptedFriendsList" class="account-list"></div>
+    </div>
+  </div>
+
   <!-- POPUP CAPTCHA ADMIN -->
   <div class="modal-overlay" id="captchaModal">
     <div class="modal-captcha">
@@ -341,7 +415,8 @@
   let isLoginMode = true;
   let currentUser = localStorage.getItem('bloxi_session');
   let pendingUserLogin = null;
-  
+  let currentGameSelectedDetails = null;
+
   let clickerScore = 0;
   let unrewardedClicks = 0;
   const TARGET_CLICKS = 10000;
@@ -463,7 +538,113 @@
     });
   });
 
-  // NAVIGAZIONE HUB / GIOCHI
+  // SISTEMA DETTAGLI GIOCO & STATISTICHE
+  function apriDettagliGioco(gameId, gameTitle, dateAdded) {
+    currentGameSelectedDetails = gameId;
+    document.getElementById('detGameTitle').textContent = gameTitle;
+    document.getElementById('detAddedDate').textContent = dateAdded;
+
+    // Aumenta visualizzazioni
+    dbRef.ref('game_stats/' + gameId + '/visits').transaction((val) => (val || 0) + 1);
+
+    // Sincronizza Dati
+    dbRef.ref('game_stats/' + gameId).on('value', (snap) => {
+      const data = snap.val() || {};
+      document.getElementById('detTotalVisits').textContent = formattaNumero(data.visits || 0);
+      document.getElementById('detLikes').textContent = formattaNumero(data.likes || 0);
+    });
+
+    if (gameId === 'parkour3d') {
+      dbRef.ref('online_players').on('value', snap => {
+        const p = snap.val() || {};
+        document.getElementById('detOnlineUsers').textContent = Object.keys(p).length;
+      });
+    } else {
+      document.getElementById('detOnlineUsers').textContent = "1";
+    }
+
+    document.getElementById('detailsModal').style.display = "flex";
+  }
+
+  function chiudiDettagliModal() {
+    document.getElementById('detailsModal').style.display = "none";
+  }
+
+  function lasciaLikeGioco() {
+    if (!currentGameSelectedDetails) return;
+    dbRef.ref('game_stats/' + currentGameSelectedDetails + '/likes').transaction((val) => (val || 0) + 1, (err, committed) => {
+      if (committed) alert("Grazie per il tuo Like! 👍");
+    });
+  }
+
+  // SISTEMA AMICI
+  function apriAmiciModal() {
+    document.getElementById('friendsModal').style.display = "flex";
+    caricaAmiciUI();
+  }
+
+  function chiudiAmiciModal() {
+    document.getElementById('friendsModal').style.display = "none";
+  }
+
+  function inviaRichiestaAmicizia() {
+    const friendName = document.getElementById('friendSearchName').value.trim();
+    if (!friendName || friendName.toLowerCase() === currentUser.toLowerCase()) return alert("Nickname non valido!");
+
+    const friendKey = sanitizeKey(friendName);
+    dbRef.ref('users/' + friendKey).once('value', snap => {
+      if (!snap.exists()) return alert("Utente non trovato!");
+      
+      dbRef.ref('friends/' + friendKey + '/pending/' + sanitizeKey(currentUser)).set({ from: currentUser });
+      alert("Richiesta di amicizia inviata!");
+      document.getElementById('friendSearchName').value = "";
+    });
+  }
+
+  function caricaAmiciUI() {
+    const myKey = sanitizeKey(currentUser);
+    
+    // Richieste pendenti
+    dbRef.ref('friends/' + myKey + '/pending').on('value', snap => {
+      const list = snap.val() || {};
+      const container = document.getElementById('pendingFriendsList');
+      container.innerHTML = "";
+      Object.keys(list).forEach(k => {
+        const fromUser = list[k].from;
+        const div = document.createElement('div');
+        div.className = "friend-item";
+        div.innerHTML = `<span>👤 ${escapeHtml(fromUser)}</span> 
+          <button class="btn-give btn-give-coin" onclick="accettaAmico('${fromUser}')">Accetta</button>`;
+        container.appendChild(div);
+      });
+    });
+
+    // Lista amici accettati
+    dbRef.ref('friends/' + myKey + '/accepted').on('value', snap => {
+      const list = snap.val() || {};
+      const container = document.getElementById('acceptedFriendsList');
+      container.innerHTML = "";
+      Object.keys(list).forEach(k => {
+        const friendUser = list[k].name;
+        const div = document.createElement('div');
+        div.className = "friend-item";
+        div.innerHTML = `<span>🟢 ${escapeHtml(friendUser)}</span> <span style="font-size:11px; color:#10b981;">Amico</span>`;
+        container.appendChild(div);
+      });
+    });
+  }
+
+  function accettaAmico(friendName) {
+    const myKey = sanitizeKey(currentUser);
+    const friendKey = sanitizeKey(friendName);
+
+    dbRef.ref('friends/' + myKey + '/accepted/' + friendKey).set({ name: friendName });
+    dbRef.ref('friends/' + friendKey + '/accepted/' + myKey).set({ name: currentUser });
+    dbRef.ref('friends/' + myKey + '/pending/' + friendKey).remove();
+    alert("Ora sei amico di " + friendName + "!");
+  }
+
+  // NAVIGAZIONE HUB / GIOCHI / SUPPORTO
   function apriHub() {
     parkourActive = false;
     if (parkourAnimFrame) cancelAnimationFrame(parkourAnimFrame);
@@ -477,6 +658,7 @@
     document.getElementById('authView').style.display = "none";
     document.getElementById('hubView').style.display = "block";
     document.getElementById('gameView').style.display = "none";
+    document.getElementById('supportView').style.display = "none";
     caricaInterfaccia();
     setTimeout(() => caricaAvatar3D('avatarHubContainer'), 100);
   }
@@ -484,6 +666,7 @@
   function avviaClickerGame() {
     document.getElementById('authView').style.display = "none";
     document.getElementById('hubView').style.display = "none";
+    document.getElementById('supportView').style.display = "none";
     document.getElementById('gameView').style.display = "block";
 
     document.getElementById('currentUsername').textContent = currentUser;
@@ -491,6 +674,71 @@
     unrewardedClicks = 0;
     aggiornaInterfacciaClicker();
     setTimeout(() => caricaAvatar3D('avatarGameContainer'), 100);
+  }
+
+  function apriSupporto() {
+    document.getElementById('authView').style.display = "none";
+    document.getElementById('hubView').style.display = "none";
+    document.getElementById('gameView').style.display = "none";
+    document.getElementById('supportView').style.display = "block";
+    document.getElementById('ticketSubject').value = "";
+    document.getElementById('ticketMessage').value = "";
+
+    if (currentUser === OWNER_NAME) {
+      document.getElementById('adminTicketSection').style.display = "block";
+      caricaSegnalazioniAdmin();
+    } else {
+      document.getElementById('adminTicketSection').style.display = "none";
+    }
+  }
+
+  function inviaSegnalazioneSupporto() {
+    const subject = document.getElementById('ticketSubject').value.trim();
+    const message = document.getElementById('ticketMessage').value.trim();
+    if (!subject || !message) return alert("Compila tutti i campi della segnalazione!");
+
+    const ticketRef = dbRef.ref('support_tickets').push();
+    ticketRef.set({
+      user: currentUser,
+      subject: subject,
+      message: message,
+      timestamp: Date.now()
+    }, (err) => {
+      if (!err) {
+        alert("Segnalazione inviata con successo al proprietario!");
+        document.getElementById('ticketSubject').value = "";
+        document.getElementById('ticketMessage').value = "";
+        apriHub();
+      }
+    });
+  }
+
+  function caricaSegnalazioniAdmin() {
+    const container = document.getElementById('ticketListContainer');
+    dbRef.ref('support_tickets').on('value', (snap) => {
+      const tickets = snap.val() || {};
+      container.innerHTML = "";
+      const keys = Object.keys(tickets);
+      if (keys.length === 0) {
+        container.innerHTML = `<div style="color:#8a94a6; text-align:center;">Nessuna segnalazione ricevuta.</div>`;
+        return;
+      }
+      keys.reverse().forEach(k => {
+        const t = tickets[k];
+        const dateStr = new Date(t.timestamp).toLocaleString();
+        const item = document.createElement('div');
+        item.className = "ticket-item";
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+            <strong style="color:#3b82f6;">👤 ${escapeHtml(t.user)}</strong>
+            <span style="color:#8a94a6; font-size:11px;">${dateStr}</span>
+          </div>
+          <div style="font-weight:bold; color:#a855f7; margin-bottom:2px;">Oggetto: ${escapeHtml(t.subject)}</div>
+          <div>${escapeHtml(t.message)}</div>
+        `;
+        container.appendChild(item);
+      });
+    });
   }
 
   /* LOGICA GIOCO CLICKER */
@@ -565,6 +813,7 @@
     parkourActive = true;
     document.getElementById('hubView').style.display = "none";
     document.getElementById('gameView').style.display = "none";
+    document.getElementById('supportView').style.display = "none";
     document.getElementById('hud').style.display = "block";
     document.getElementById('hint').style.display = "block";
     document.getElementById('noobUiControls').style.display = 'flex';
@@ -592,7 +841,7 @@
     window.addEventListener('resize', resizeParkour);
     resizeParkour();
 
-    // Creazione Avatar Noob[cite: 1, 2]
+    // Creazione Avatar Noob
     const YEL = 0xf5cd30, BLU = 0x0d69ac, GRN = 0xa4bd47;
     const lam = c => new THREE.MeshLambertMaterial({ color: c });
     function part(w, h, d, c, y) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), lam(c)); m.position.y = y; return m; }
@@ -616,7 +865,7 @@
     const localAvatar = creaAvatarNoob();
     S.add(localAvatar);
 
-    // Pulsanti UI animazioni Noob[cite: 1]
+    // Pulsanti UI animazioni Noob
     document.querySelectorAll('#noobUiControls button').forEach(b => {
       b.onclick = () => {
         currentNoobMode = b.dataset.m;
@@ -624,7 +873,7 @@
       };
     });
 
-    // Mappa Piattaforme Infinite[cite: 2]
+    // Mappa Piattaforme Infinite
     const plats = []; let G = { n: 0, x: 0, y: 0, z: 0, dp: 0, w: 0 };
     function label(t) {
       const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d');
@@ -750,7 +999,7 @@
       if (p.y < p.lastY - 16) respawn();
       while (G.z > p.z - 150) addPlat();
 
-      // Animazione Avatar Noob[cite: 1, 2]
+      // Animazione Avatar Noob
       localAvatar.position.set(p.x, p.y, p.z);
       const mov = Math.hypot(p.vx, p.vz) > .1;
       let currentAnim = currentNoobMode, animVal = 0;
@@ -813,7 +1062,6 @@
       if (isLoginMode) {
         if (!userData || userData.password !== pass) return mostraMessaggio("Credenziali errate!", "error");
         
-        // Controllo se è admin o owner
         if (userData.role === "owner" || userData.role === "admin") {
           pendingUserLogin = user;
           document.getElementById('popupCaptchaInput').value = "";
